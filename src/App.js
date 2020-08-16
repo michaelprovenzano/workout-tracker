@@ -1,24 +1,26 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Route } from 'react-router-dom';
+import './styles/bootstrap/bootstrap-grid.css';
+import './App.scss';
+
+import Navigation from './components/Navigation/Navigation.component';
+
+// Pages
+import Dashboard from './layouts/Dashboard/Dashboard.component';
+import WorkoutPage from './layouts/WorkoutPage/WorkoutPage.component';
+import ExercisePage from './layouts/ExercisePage/ExercisePage.component';
+import SignupPage from './layouts/SignupPage/SignupPage.component';
+import SigninPage from './layouts/SigninPage/SigninPage.component';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      <Navigation />
+      <Route exact path='/sign-up' component={SignupPage} />
+      <Route exact path='/sign-in' component={SigninPage} />
+      <Route exact path='/dashboard' component={Dashboard} />
+      <Route exact path='/workout-logs/:workoutLogId' component={WorkoutPage} />
+      <Route exact path='/workout-logs/:workoutLogId/:exerciseLogId' component={ExercisePage} />
     </div>
   );
 }

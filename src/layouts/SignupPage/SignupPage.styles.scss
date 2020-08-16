@@ -1,0 +1,45 @@
+@import '../../styles/variables.scss';
+
+.signup-page {
+  color: $white;
+  font-size: 1.2rem;
+  background: url('../../images/signup-bg.jpg') fixed no-repeat;
+  background-size: cover;
+  background-position-x: center;
+  min-height: 100vh;
+  padding-bottom: 80px;
+
+  a,
+  a:visited {
+    font-size: 1.2rem;
+    color: white;
+  }
+
+  p {
+    padding-bottom: 1rem;
+  }
+
+  .sign-in {
+    margin-bottom: 29px;
+  }
+
+  .input-group {
+    margin-bottom: 30px;
+  }
+
+  .logo {
+    margin-bottom: 60px;
+  }
+
+  .password-link {
+    margin-bottom: 136px;
+  }
+}
+
+@media (max-width: $breakpoint-tablet) {
+  .signup-page {
+    .password-link {
+      margin-bottom: 100px;
+    }
+  }
+}

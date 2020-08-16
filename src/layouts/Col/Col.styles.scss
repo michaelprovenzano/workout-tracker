@@ -1,0 +1,40 @@
+@import '../../styles/variables.scss';
+
+.col-component {
+  padding: 20px;
+  min-height: calc(100vh - 92px);
+
+  &.bg-lg {
+    background-color: white;
+    box-shadow: $box-shadow;
+  }
+
+  &.bg-sm {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.workout-panel-exercises {
+  height: calc(100vh + 20px);
+  transform: translateY(-20px);
+  background-color: white;
+  box-shadow: $box-shadow;
+}
+
+@media (max-width: $breakpoint-mobile) {
+  .col-component {
+    padding: 16px;
+    min-height: 0;
+
+    &.bg-lg {
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+    &.bg-sm {
+      background-color: white;
+      box-shadow: $box-shadow;
+    }
+  }
+}

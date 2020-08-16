@@ -1,0 +1,38 @@
+@import '../../styles/variables.scss';
+
+.prev-next {
+  display: inline-block;
+  height: 56px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background-color: $white;
+  box-shadow: $box-shadow;
+
+  & > * {
+    padding: 0;
+  }
+
+  button {
+    color: $primary;
+    font-weight: bold;
+    font-size: 1.2rem;
+    border: none;
+    background-color: transparent;
+  }
+
+  .btn-text {
+    margin: 0 7px;
+  }
+
+  .arrow {
+    height: 12px;
+    width: 12px;
+  }
+}
+
+@media (max-width: $breakpoint-tablet) {
+  .prev-next > * {
+    padding: 16px;
+  }
+}

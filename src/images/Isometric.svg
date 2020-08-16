@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="41px" height="27px" viewBox="0 0 41 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>Isometric</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop/Workout-List-Item/Unchecked" transform="translate(-340.000000, -8.000000)" fill="currentColor">
+            <g id="Group">
+                <g id="Isometric" transform="translate(338.000000, 0.000000)">
+                    <g id="Group" transform="translate(2.000000, 8.000000)">
+                        <text id="Isometric" font-family="Helvetica" font-size="10" font-weight="normal">
+                            <tspan x="0" y="26">Isometric</tspan>
+                        </text>
+                        <path d="M21,0 L34,0 L34,14 L21,14 L8,14 L8,0 L21,0 Z M14.0909091,8 L14.0909091,4 L13,4 L13,9 L14.0909091,9 L17,9 L17,8 L14.0909091,8 Z M22,1 L22,13 L33,13 L33,1 L22,1 Z M27.8892955,7.0572738 L29,8.99679369 L28.9944915,9 L27.8564965,9 L26.9020468,7.33333333 L25.9918932,7.33333333 L25.9918932,9 L25,9 L25,4 L25.9918932,4 L26.9702752,4 C27.8907498,4 28.6369419,4.74619208 28.6369419,5.66666667 C28.6369419,6.24749428 28.339829,6.75892745 27.8892955,7.0572738 Z M25.9918932,5 L25.9918932,6.33333333 L26.978382,6.33333333 C27.3465718,6.33333333 27.6450486,6.0348565 27.6450486,5.66666667 C27.6450486,5.29847683 27.3465718,5 26.978382,5 L25.9918932,5 Z" id="Combined-Shape" fill-rule="nonzero"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

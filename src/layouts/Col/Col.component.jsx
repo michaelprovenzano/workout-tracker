@@ -1,0 +1,20 @@
+import React from 'react';
+import './Col.styles.scss';
+
+const Col = props => {
+  let { children, number, bgLarge, bgSmall, classes } = props;
+
+  return (
+    <section
+      className={`col-component col-lg-4 col-md-6 ${
+        number === '1' ? 'offset-lg-2' : ''
+      } d-flex justify-content-start align-items-center flex-column ${bgLarge ? 'bg-lg' : ''} ${
+        bgSmall ? 'bg-sm' : ''
+      } ${classes}`}
+    >
+      {children}
+    </section>
+  );
+};
+
+export default Col;

@@ -1,0 +1,84 @@
+@import '../../styles/variables.scss';
+
+.icon {
+  fill: $white;
+}
+
+.menu-icon {
+  display: inline-block;
+  fill: $primary;
+  height: 30px;
+  width: 30px;
+  position: relative;
+
+  &::before,
+  &::after {
+    display: none !important;
+  }
+
+  span {
+    background: $primary;
+    display: inline-block;
+    border-radius: 10000px;
+    transition: 0.15s cubic-bezier(0.455, 0.39, 1, 1.5);
+  }
+  .line-1 {
+    width: 30px;
+    height: 2px;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(7px) rotate(0);
+  }
+  .line-2 {
+    width: 22px;
+    height: 2px;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    opacity: 1;
+  }
+  .line-3 {
+    width: 30px;
+    height: 2px;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-7px) rotate(0);
+  }
+
+  &.active {
+    position: relative;
+
+    .icon {
+      fill: $primary;
+    }
+
+    span {
+      background: $primary;
+      display: inline-block;
+      border-radius: 10000px;
+    }
+
+    .line-1 {
+      width: 30px;
+      height: 2px;
+      transform: rotate(45deg);
+    }
+
+    .line-2 {
+      width: 22px;
+      height: 2px;
+      top: 50%;
+      right: 50%;
+      transform: translateX(50%) rotate(45deg);
+      opacity: 0;
+    }
+
+    .line-3 {
+      width: 30px;
+      height: 2px;
+      transform: rotate(-45deg);
+    }
+  }
+}

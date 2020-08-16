@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="31px" viewBox="0 0 36 31" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>Weights</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop/Workout-List-Item/Unchecked" transform="translate(-288.000000, -7.000000)" fill="currentColor">
+            <g id="Group">
+                <g id="Weights" transform="translate(284.000000, 0.000000)">
+                    <g id="Group" transform="translate(4.000000, 7.000000)">
+                        <text id="Weights" font-family="Helvetica" font-size="10" font-weight="normal">
+                            <tspan x="0" y="28">Weights</tspan>
+                        </text>
+                        <path d="M15.5055014,7.26740619 L20.1721681,7.26740619 L20.1721681,4.08883476 C20.1721681,3.6746212 20.5079545,3.33883476 20.9221681,3.33883476 L24.0888348,3.33883476 C24.5030483,3.33883476 24.8388348,3.6746212 24.8388348,4.08883476 L24.8388348,13.5888348 C24.8388348,14.0030483 24.5030483,14.3388348 24.0888348,14.3388348 L20.9221681,14.3388348 C20.5079545,14.3388348 20.1721681,14.0030483 20.1721681,13.5888348 L20.1721681,10.4102633 L15.5055014,10.4102633 L15.5055014,13.5888348 C15.5055014,14.0030483 15.169715,14.3388348 14.7555014,14.3388348 L11.5888348,14.3388348 C11.1746212,14.3388348 10.8388348,14.0030483 10.8388348,13.5888348 L10.8388348,4.08883476 C10.8388348,3.6746212 11.1746212,3.33883476 11.5888348,3.33883476 L14.7555014,3.33883476 C15.169715,3.33883476 15.5055014,3.6746212 15.5055014,4.08883476 L15.5055014,7.26740619 Z" id="Combined-Shape" fill-rule="nonzero" fill="current" transform="translate(17.838835, 8.838835) rotate(-315.000000) translate(-17.838835, -8.838835) "></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

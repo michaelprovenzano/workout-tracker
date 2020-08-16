@@ -1,0 +1,26 @@
+@import '../../styles/variables.scss';
+
+.header {
+  position: fixed;
+  top: 80px;
+  z-index: 999;
+
+  .row {
+    color: $primary;
+    background-color: $white;
+    width: 100%;
+    margin: 0;
+    height: 46px;
+    box-shadow: $box-shadow;
+
+    h1 {
+      font-size: 1.6rem;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-tablet) {
+  .header {
+    top: 46px;
+  }
+}

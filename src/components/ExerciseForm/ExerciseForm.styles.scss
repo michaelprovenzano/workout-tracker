@@ -1,0 +1,62 @@
+@import '../../styles/variables.scss';
+
+.exercise-form {
+  font-size: 1.2rem;
+
+  section {
+    margin-bottom: 35px;
+  }
+
+  input {
+    background-color: transparent;
+    text-align: center;
+    border: 1px solid $black;
+    border-radius: 3px;
+
+    &:focus {
+      border: 2px solid $primary;
+    }
+  }
+
+  .label {
+    background-color: $primary;
+    color: $white;
+    font-weight: bold;
+    width: 60px;
+    height: 100%;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .current-notes {
+    height: 112px;
+
+    input {
+      border: 1px solid $primary;
+      border-radius: 0 3px 3px 0;
+      border-left: none;
+    }
+  }
+
+  .details {
+    .row {
+      height: 32px;
+      margin-bottom: 11px;
+    }
+
+    .row:last-child {
+      margin-bottom: 0;
+    }
+
+    input {
+      height: 100%;
+    }
+  }
+
+  .bold {
+    font-weight: bold;
+  }
+
+  .selected {
+    color: $primary;
+  }
+}

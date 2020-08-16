@@ -1,0 +1,100 @@
+@import '../../styles/variables.scss';
+
+.exercise-item {
+  width: 100%;
+  height: 44px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: $black;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+
+  .cb {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    border: 2px solid $primary;
+  }
+
+  .name {
+    margin-left: 10px;
+  }
+
+  .detail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-right: 10px;
+  }
+
+  svg {
+    color: $primary;
+    fill: $primary;
+  }
+
+  &.complete {
+    color: $primary;
+    opacity: 50%;
+
+    .cb {
+      background-color: $primary;
+
+      .checkmark {
+        display: inline-block;
+        position: relative;
+        width: 10px;
+        height: 10px;
+        transform: rotate(45deg);
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: calc(90% - 2px);
+          right: 25%;
+          width: 60%;
+          height: 2px;
+          background-color: $white;
+          border-radius: 5000px;
+        }
+
+        &::after {
+          content: '';
+          position: absolute;
+          top: -10%;
+          right: 25%;
+          width: 2px;
+          height: 100%;
+          background-color: $white;
+          border-radius: 5000px;
+        }
+      }
+    }
+  }
+
+  &.active {
+    color: $white;
+    background-color: $primary;
+    border-radius: 1000px 0 0 1000px;
+    padding-left: 20px;
+    width: calc(100% + 20px);
+
+    .cb {
+      border: 2px solid $white;
+    }
+
+    .arrow {
+      display: none;
+    }
+
+    svg {
+      color: $white;
+      fill: $white;
+    }
+  }
+}
