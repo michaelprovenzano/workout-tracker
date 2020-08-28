@@ -1,8 +1,8 @@
 const INITIAL_STATE = {};
 
-const userReducer = (state = INITIAL_STATE, action) => {
+const activeWorkoutLogReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case 'SET_CURRENT_USER':
+    case 'SET_ACTIVE_WORKOUT_LOG':
       return {
         ...state,
         ...action.payload,
@@ -12,4 +12,4 @@ const userReducer = (state = INITIAL_STATE, action) => {
   }
 };
 
-export default userReducer;
+export default activeWorkoutLogReducer;

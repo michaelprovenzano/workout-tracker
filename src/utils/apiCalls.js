@@ -19,6 +19,19 @@ let requestConstructor = {
 
     return data;
   },
+  patch: async (reqUrl, body) => {
+    const response = await fetch(reqUrl, {
+      method: 'PATCH',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: setAuthHeader(),
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await response.json();
+    return data;
+  },
   post: async (reqUrl, body) => {
     const response = await fetch(reqUrl, {
       method: 'POST',
@@ -38,18 +51,6 @@ let api = {
   addOne: async (route, body) => {
     return await requestConstructor.post(`${baseUrl}/${route}`, body);
   },
-  getActiveProgram: async () => {
-    const response = await fetch(`${baseUrl}/program-logs?status=active`, {
-      method: 'GET',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: setAuthHeader(),
-      },
-    });
-    const data = await response.json();
-    return data[0];
-  },
   get: async (route, queryString) => {
     return await requestConstructor.get(
       `${baseUrl}/${route}/${queryString ? '?' : ''}${queryString}`
@@ -60,40 +61,8 @@ let api = {
 
     return await requestConstructor.get(`${baseUrl}/${route}/${id}`, 'first');
   },
-  getOneExercise: async id => {
-    if (!id) return;
-
-    return await requestConstructor.get(`${baseUrl}/exercise/${id}`);
-  },
-  getOneExerciseLog: async id => {
-    if (!id) return;
-
-    return await requestConstructor.get(`${baseUrl}/exercise-logs/${id}`);
-  },
-  getWorkout: async id => {
-    if (!id) return;
-
-    const response = await fetch(`${baseUrl}/workouts/${id}`, {
-      method: 'GET',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: setAuthHeader(),
-      },
-    });
-
-    const data = await response.json();
-    return data[0];
-  },
-  getOneWorkoutLog: async id => {
-    if (!id) return;
-
-    return await requestConstructor.get(`${baseUrl}/workout-logs/${id}`);
-  },
-  getExerciseLogs: async queryString => {
-    return await requestConstructor.get(
-      `${baseUrl}/exercise-logs/${queryString ? '?' : ''}${queryString}`
-    );
+  updateOne: async (route, id, body) => {
+    return await requestConstructor.patch(`${baseUrl}/${route}/${id}`, body);
   },
 };
 

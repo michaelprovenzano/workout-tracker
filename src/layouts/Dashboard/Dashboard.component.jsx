@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import api from '../../utils/apiCalls';
 import './Dashboard.styles.scss';
 
+import { setActiveProgram } from '../../redux/activeProgram/activeProgram.actions';
+import { setNextWorkout } from '../../redux/nextWorkout/nextWorkout.actions';
+
 import Header from '../../components/Header/Header.component';
 import ProgressRing from '../../components/ProgressRing/ProgressRing.component';
 import StatRing from '../../components/StatRing/StatRing.component';
@@ -19,17 +22,41 @@ class Dashboard extends React.Component {
     };
   }
 
-  componentDidMount = async () => {
-    let activeProgram, nextWorkout;
-    activeProgram = await api.getActiveProgram(this.props.currentUser);
+  getActiveProgram = async () => {
+    let activeProgram;
+    activeProgram = await api.get('program-logs', `status=active`);
+    activeProgram = activeProgram[0];
+
+    // Set the active program in redux
+    this.props.setActiveProgram(activeProgram);
+
+    // Set the next workout in redux
+    this.getNextWorkout(activeProgram);
+
+    // Set the state for dashboard
+    this.setState({
+      activeProgram: activeProgram,
+    });
+  };
+
+  getNextWorkout = async activeProgram => {
+    let nextWorkout;
+
     if (activeProgram) nextWorkout = await api.getOne('workouts', activeProgram.next_workout);
+
+    this.props.setNextWorkout(nextWorkout);
+
+    // Set the state for dashboard
     this.setState(
       {
-        activeProgram: activeProgram,
         nextWorkout: nextWorkout,
       },
       () => console.log(this.state)
     );
+  };
+
+  componentDidMount = () => {
+    this.getActiveProgram();
   };
 
   render() {
@@ -39,7 +66,11 @@ class Dashboard extends React.Component {
       <div className='offset-header'>
         <Header text='Dashboard' />
         {activeProgram ? (
-          <WorkoutSticky activeProgram={activeProgram} nextWorkout={nextWorkout} />
+          <WorkoutSticky
+            activeProgram={activeProgram}
+            nextWorkout={nextWorkout}
+            history={this.props.history}
+          />
         ) : null}
         <main className='content'>
           <div className='row'>
@@ -76,4 +107,9 @@ const mapStateToProps = state => ({
   currentUser: state.user.currentUser,
 });
 
-export default connect(mapStateToProps)(Dashboard);
+const mapDispatchToProps = dispatch => ({
+  setActiveProgram: program => dispatch(setActiveProgram(program)),
+  setNextWorkout: workout => dispatch(setNextWorkout(workout)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

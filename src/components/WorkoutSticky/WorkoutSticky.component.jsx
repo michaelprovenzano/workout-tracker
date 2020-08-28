@@ -3,20 +3,16 @@ import api from '../../utils/apiCalls';
 
 import './WorkoutSticky.styles.scss';
 
-import { Redirect } from 'react-router-dom';
 import Button from '../Button/Button.component';
 
 class WorkoutSticky extends React.Component {
   constructor(props) {
     super();
     this.props = props;
-    this.state = {
-      referrer: null,
-    };
   }
 
   onClick = async () => {
-    let { activeProgram, nextWorkout } = this.props;
+    let { activeProgram, nextWorkout, history } = this.props;
     let workoutLogId = activeProgram.active_workout_log;
 
     // Check if next workout is already started (check for active workout log property)
@@ -32,16 +28,11 @@ class WorkoutSticky extends React.Component {
     }
 
     // Redirect to the workout log page
-    this.setState({
-      referrer: `/workout-logs/${workoutLogId}`,
-    });
+    history.push(`/workout-logs/${workoutLogId}`);
   };
 
   render() {
-    let { activeProgram, nextWorkout, to } = this.props;
-    let { referrer } = this.state;
-
-    if (referrer) return <Redirect to={referrer} />;
+    let { nextWorkout } = this.props;
 
     return (
       <div className='workout-sticky row'>
@@ -51,7 +42,7 @@ class WorkoutSticky extends React.Component {
             <Button text='Postpone' position='right' type='secondary' />
           </div>
           <small>Today's Workout</small>
-          <h2>{nextWorkout.name}</h2>
+          <h2>{nextWorkout ? nextWorkout.name : ''}</h2>
           <Button text='Workout' position='center' type='primary' onClick={this.onClick} />
         </div>
       </div>

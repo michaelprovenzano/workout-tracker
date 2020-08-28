@@ -1,6 +1,5 @@
 import React from 'react';
 import './Button.styles.scss';
-import { Redirect } from 'react-router-dom';
 
 class Button extends React.Component {
   constructor(props) {
@@ -8,21 +7,19 @@ class Button extends React.Component {
 
     this.props = props;
     this.state = {
-      referrer: null,
+      history: null,
+      targetUrl: null,
     };
   }
 
   render() {
-    let { text, position, type, className, to, onClick } = this.props;
-    let { referrer } = this.state;
-
-    if (referrer) return <Redirect to={referrer} />;
+    let { text, position, type, className, history, targetUrl, onClick } = this.props;
 
     return (
       <button
         className={`btn btn-${type} btn-${position} ${className ? className : ''}`}
         onClick={() => {
-          if (to) this.setState({ referrer: to });
+          if (targetUrl && history) history.push(targetUrl);
           if (onClick) onClick();
         }}
       >

@@ -2,7 +2,7 @@ import React from 'react';
 import './Col.styles.scss';
 
 const Col = props => {
-  let { children, number, bgLarge, bgSmall, classes } = props;
+  let { children, number, bgLarge, bgSmall, className } = props;
 
   return (
     <section
@@ -10,7 +10,7 @@ const Col = props => {
         number === '1' ? 'offset-lg-2' : ''
       } d-flex justify-content-start align-items-center flex-column ${bgLarge ? 'bg-lg' : ''} ${
         bgSmall ? 'bg-sm' : ''
-      } ${classes}`}
+      } ${className}`}
     >
       {children}
     </section>
