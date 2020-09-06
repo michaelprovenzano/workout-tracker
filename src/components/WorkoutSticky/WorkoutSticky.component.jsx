@@ -1,6 +1,10 @@
 import React from 'react';
 import api from '../../utils/apiCalls';
 
+// Redux Store
+import { connect } from 'react-redux';
+import { setActiveWorkoutLog } from '../../redux/activeWorkoutLog/activeWorkoutLog.actions';
+
 import './WorkoutSticky.styles.scss';
 
 import Button from '../Button/Button.component';
@@ -9,30 +13,37 @@ class WorkoutSticky extends React.Component {
   constructor(props) {
     super();
     this.props = props;
+    this.state = {
+      referrer: '/dashboard',
+    };
   }
 
   onClick = async () => {
-    let { activeProgram, nextWorkout, history } = this.props;
+    let { activeProgram, nextWorkout, setActiveWorkoutLog, history } = this.props;
     let workoutLogId = activeProgram.active_workout_log;
 
     // Check if next workout is already started (check for active workout log property)
     if (!workoutLogId) {
       // If there's no log, create a new workout log for the current program and make it the active workout log
       let workoutLog = await api.addOne('workout-logs', {
-        workout_id: nextWorkout.id,
-        program_log_id: activeProgram.id,
+        program_workout_id: nextWorkout.program_workout_id,
+        program_log_id: activeProgram.program_log_id,
         date: new Date(Date.now()),
         created_at: new Date(Date.now()),
       });
-      workoutLogId = workoutLog.id;
+
+      if (workoutLog) workoutLogId = workoutLog.workout_log_id;
     }
 
     // Redirect to the workout log page
-    history.push(`/workout-logs/${workoutLogId}`);
+    if (workoutLogId) history.push(`/workout-logs/${workoutLogId}`);
   };
 
   render() {
-    let { nextWorkout } = this.props;
+    let { nextWorkout, activeWorkout } = this.props;
+    let buttonText;
+
+    activeWorkout ? (buttonText = 'Continue Workout') : (buttonText = 'Start Workout');
 
     return (
       <div className='workout-sticky row'>
@@ -41,13 +52,23 @@ class WorkoutSticky extends React.Component {
             <Button text='Skip' position='left' type='secondary' />
             <Button text='Postpone' position='right' type='secondary' />
           </div>
-          <small>Today's Workout</small>
-          <h2>{nextWorkout ? nextWorkout.name : ''}</h2>
-          <Button text='Workout' position='center' type='primary' onClick={this.onClick} />
+          {activeWorkout ? <small>Today's Workout</small> : <small>Next Workout</small>}
+          <h2>{activeWorkout ? activeWorkout.name : nextWorkout.name}</h2>
+          <Button text={buttonText} position='center' type='primary' onClick={this.onClick} />
         </div>
       </div>
     );
   }
 }
+
+// const mapDispatchToProps = dispatch => ({
+//   // setActiveWorkout: workout => dispatch(setActiveWorkout(workout)),
+//   // setActiveProgram: program => dispatch(setActiveProgram(program)),
+//   setActiveWorkoutLog: log => dispatch(setActiveWorkoutLog(log)),
+// });
+
+// const mapStateToProps = state => ({
+//   ...state,
+// });
 
 export default WorkoutSticky;

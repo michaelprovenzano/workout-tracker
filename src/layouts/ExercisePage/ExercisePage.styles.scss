@@ -1,7 +1,16 @@
 @import '../../styles/variables.scss';
 
-.workout-page {
+.exercise-page {
   font-size: 1.2rem;
+
+  main {
+    padding-bottom: 56px;
+  }
+
+  .col-component {
+    // height: calc(100vh - 132px);
+    // overflow-y: auto;
+  }
 
   .progress-bar {
     margin-bottom: 32px;
@@ -29,7 +38,7 @@
   }
 
   .workout-list {
-    padding-bottom: 56px;
+    overflow-y: auto;
   }
 
   .bold {
@@ -43,7 +52,10 @@
   .text-white {
     color: $white;
   }
-}
 
-@media (max-width: $breakpoint-tablet) {
+  @media (max-width: $breakpoint-tablet) {
+    .workout-list {
+      padding-bottom: 0;
+    }
+  }
 }

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import api from '../../utils/apiCalls';
 import './Dashboard.styles.scss';
 
+import { setActiveWorkout } from '../../redux/activeWorkout/activeWorkout.actions';
 import { setActiveProgram } from '../../redux/activeProgram/activeProgram.actions';
 import { setNextWorkout } from '../../redux/nextWorkout/nextWorkout.actions';
 
@@ -18,49 +19,52 @@ class Dashboard extends React.Component {
     super();
     this.state = {
       activeProgram: null,
+      activeWorkout: null,
       nextWorkout: null,
     };
   }
 
   getActiveProgram = async () => {
-    let activeProgram;
-    activeProgram = await api.get('program-logs', `status=active`);
-    activeProgram = activeProgram[0];
+    let activeProgram = await api.get('program-logs', `status=active`);
+    return activeProgram[0];
+  };
 
-    // Set the active program in redux
-    this.props.setActiveProgram(activeProgram);
+  getActiveWorkoutLog = async workoutLogId => {
+    let activeWorkoutLog = await api.getOne('workout-logs', workoutLogId);
 
-    // Set the next workout in redux
-    this.getNextWorkout(activeProgram);
+    let activeWorkout;
+    if (activeWorkoutLog) activeWorkout = await api.getOne('workouts', activeWorkoutLog.workout_id);
 
-    // Set the state for dashboard
-    this.setState({
-      activeProgram: activeProgram,
-    });
+    return activeWorkout;
   };
 
   getNextWorkout = async activeProgram => {
     let nextWorkout;
+    if (activeProgram) {
+      nextWorkout = await api.get(
+        'program-workouts',
+        `program_workout_id=${activeProgram.next_workout}`
+      );
+      nextWorkout = nextWorkout[0];
+    }
 
-    if (activeProgram) nextWorkout = await api.getOne('workouts', activeProgram.next_workout);
+    return nextWorkout;
+  };
 
-    this.props.setNextWorkout(nextWorkout);
+  getData = async () => {
+    let activeProgram = await this.getActiveProgram();
+    let activeWorkout = await this.getActiveWorkoutLog(activeProgram.active_workout_log);
+    let nextWorkout = await this.getNextWorkout(activeProgram);
 
-    // Set the state for dashboard
-    this.setState(
-      {
-        nextWorkout: nextWorkout,
-      },
-      () => console.log(this.state)
-    );
+    return { activeProgram, activeWorkout, nextWorkout };
   };
 
   componentDidMount = () => {
-    this.getActiveProgram();
+    this.getData().then(response => this.setState(response, () => console.log(this.state)));
   };
 
   render() {
-    let { nextWorkout, activeProgram } = this.state;
+    let { nextWorkout, activeProgram, activeWorkout } = this.state;
 
     return (
       <div className='offset-header'>
@@ -68,10 +72,12 @@ class Dashboard extends React.Component {
         {activeProgram ? (
           <WorkoutSticky
             activeProgram={activeProgram}
+            activeWorkout={activeWorkout}
             nextWorkout={nextWorkout}
             history={this.props.history}
           />
         ) : null}
+
         <main className='content'>
           <div className='row'>
             <Col number='1'>
@@ -109,6 +115,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   setActiveProgram: program => dispatch(setActiveProgram(program)),
+  setActiveWorkout: workout => dispatch(setActiveWorkout(workout)),
   setNextWorkout: workout => dispatch(setNextWorkout(workout)),
 });
 

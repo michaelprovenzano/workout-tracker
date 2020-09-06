@@ -26,9 +26,6 @@ class ExercisePage extends React.Component {
       exerciseLog: undefined,
       lastExerciseLog: undefined,
       formData: {},
-      saveFormData: false,
-      updateForm: false,
-      referrer: null,
     };
   }
 
@@ -36,55 +33,51 @@ class ExercisePage extends React.Component {
     this.setData();
   };
 
-  makeActive = async id => {
-    let nextExerciseId = id;
-
+  makeActive = async workoutExerciseId => {
     // Get index
-    let activeExerciseIndex = this.state.exercises.findIndex(item => item.id === id);
-
-    // Check if there is an exercise log for the next exercise
-    let nextExerciseLog = await this.getExerciseLog(nextExerciseId);
-
-    // Get previous exercise log for exercise
-    let lastExerciseLog = await this.getLastExerciseLog(nextExerciseId);
-
-    this.setState(
-      {
-        activeExercise: activeExerciseIndex,
-        exerciseLog: undefined,
-      },
-      () => {
-        this.props.history.push(`/workout-logs/${this.state.workoutLog.id}/${nextExerciseLog.id}`);
-
-        this.setState({
-          activeExercise: activeExerciseIndex,
-          exerciseLog: nextExerciseLog,
-          lastExerciseLog,
-        });
-      }
+    let activeExerciseIndex = this.state.exercises.findIndex(
+      item => item.workout_exercise_id === workoutExerciseId
     );
+
+    // It's janky but the state must be set to null and then re-set to the response for the update to take effect
+    this.getExerciseLogData(activeExerciseIndex)
+      .then(response => this.setState({ exerciseLog: null }, () => this.setState(response)))
+      .then(response => {
+        let { exerciseLog, workoutLog } = this.state;
+
+        // Set the url
+        if (exerciseLog && workoutLog)
+          this.props.history.push(
+            `/workout-logs/${workoutLog.workout_log_id}/${exerciseLog.exercise_log_id}`
+          );
+      })
+      .catch(err => console.log(err));
   };
 
-  getLastExerciseLog = async exerciseId => {
+  getLastExerciseLog = async workoutExerciseId => {
     let pastExerciseLogs = await api.get(
       'exercise-logs',
-      `exercise_id=${exerciseId}&orderBy=[desc]date`
+      `workout_exercise_id=${workoutExerciseId}&orderBy=[desc]date`
     );
     if (pastExerciseLogs.length >= 2) return pastExerciseLogs[1];
 
     return {};
   };
 
-  getExerciseLog = async exerciseId => {
+  getExerciseLog = async workoutExerciseId => {
     let { workoutLog } = this.state;
 
     // Check if there is an exercise log for the next exercise
-    let nextExerciseLog = workoutLog.exercise_logs.filter(log => log.exercise_id === exerciseId);
+    let nextExerciseLog = workoutLog.exercise_logs.filter(
+      log => log.workout_exercise_id === workoutExerciseId
+    );
 
     // If there is no log, make one
     if (nextExerciseLog.length === 0) {
       // Create a new log
-      nextExerciseLog = await api.addOne('exercise-logs', { exercise_id: exerciseId });
+      nextExerciseLog = await api.addOne('exercise-logs', {
+        workout_exercise_id: workoutExerciseId,
+      });
       workoutLog.exercise_logs.push(nextExerciseLog);
     } else {
       nextExerciseLog = nextExerciseLog[0];
@@ -93,67 +86,63 @@ class ExercisePage extends React.Component {
     return nextExerciseLog;
   };
 
+  getExerciseLogData = async nextExerciseIndex => {
+    try {
+      let { exercises } = this.state;
+
+      // Get the exercise id
+      let nextExerciseId = exercises[nextExerciseIndex].workout_exercise_id;
+
+      // Check if there is an exercise log for the next exercise
+      let nextExerciseLog = await this.getExerciseLog(nextExerciseId);
+
+      // Get previous exercise log for exercise
+      let lastExerciseLog = await this.getLastExerciseLog(nextExerciseId);
+
+      return {
+        activeExercise: nextExerciseIndex,
+        exerciseLog: nextExerciseLog,
+        lastExerciseLog,
+      };
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   getNextPrevExerciseLog = async direction => {
-    let { workoutLog, activeExercise, exercises } = this.state,
-      nextExerciseIndex;
+    let { activeExercise, exercises } = this.state;
+    let nextExerciseIndex;
 
     if (direction === 'next') nextExerciseIndex = activeExercise + 1;
     if (direction === 'prev') nextExerciseIndex = activeExercise - 1;
 
-    // Get the exercise id
-    let nextExerciseId = exercises[nextExerciseIndex].id;
-
     // Return if the exercise is outside of the array
-    if (nextExerciseIndex >= exercises.length - 1 || nextExerciseIndex < 0) return;
+    if (nextExerciseIndex >= exercises.length || nextExerciseIndex < 0) return;
 
-    // Check if there is an exercise log for the next exercise
-    let nextExerciseLog = await this.getExerciseLog(nextExerciseId);
-
-    // Get previous exercise log for exercise
-    let lastExerciseLog = await this.getLastExerciseLog(nextExerciseId);
-
-    this.setState(
-      {
-        exerciseLog: undefined,
-      },
-      () =>
-        this.setState(
-          {
-            activeExercise: nextExerciseIndex,
-            exerciseLog: nextExerciseLog,
-            lastExerciseLog,
-          },
-          () => console.log(this.state)
-        )
-    );
-
-    // Redirect
-    this.props.history.push(`/workout-logs/${workoutLog.id}/${nextExerciseLog.id}`);
+    this.makeActive(exercises[nextExerciseIndex].workout_exercise_id);
   };
 
   setData = async () => {
     let { workoutLogId, exerciseLogId } = this.props.match.params;
 
     // Get all data for exercise page
-    let exercises = [];
     let workoutLog = await api.getOne('workout-logs', workoutLogId);
     let workout = await api.getOne('workouts', workoutLog.workout_id);
     let exerciseLog = await api.getOne('exercise-logs', exerciseLogId);
-    let lastExerciseLog = await this.getLastExerciseLog(exerciseLog.exercise_id);
+    let lastExerciseLog = await this.getLastExerciseLog(exerciseLog.workout_exercise_id);
     let allExerciseLogs = await api.get('exercise-logs', `workout_log_id=${workoutLogId}`);
+    let exercises = await api.get(
+      'workout-exercises',
+      `workout_id=${workoutLog.workout_id}&orderBy=exercise_order`
+    );
 
     // Append exercise logs to workoutLog
     workoutLog.exercise_logs = allExerciseLogs;
 
-    // Populate exercises
-    for (let i = 0; i < workout.exercises.length; i++) {
-      let exerciseData = await api.getOne('exercises', workout.exercises[i]);
-      exerciseData.key = i;
-      exercises.push(exerciseData);
-    }
-
     // Get index of exercise log
-    let activeExercise = exercises.findIndex(log => log.id === exerciseLog.exercise_id);
+    let activeExercise = exercises.findIndex(
+      exercise => exercise.workout_exercise_id === exerciseLog.workout_exercise_id
+    );
 
     let formData = {
       total_weight: exerciseLog.total_weight,
@@ -175,7 +164,7 @@ class ExercisePage extends React.Component {
 
     // Get index of exercise log
     let exerciseLogIndex = workoutLog.exercise_logs.findIndex(
-      exerciseLog => exerciseLog.id === log.id
+      exerciseLog => exerciseLog.exercise_log_id === log.exercise_log_id
     );
 
     // Create new workoutlog object
@@ -188,46 +177,56 @@ class ExercisePage extends React.Component {
   };
 
   render() {
-    let { activeExercise, workoutLog, lastExerciseLog } = this.state;
+    let { activeExercise, workout, workoutLog, exercises, lastExerciseLog } = this.state;
 
     let exerciseName = '',
-      workoutName = '';
+      workoutName = '',
+      programName = '',
+      progress = 0;
 
     if (this.state.exercises.length > 0) {
       activeExercise = this.state.exercises[activeExercise];
       exerciseName = activeExercise.exercise;
     }
 
+    if (workoutLog) progress = (workoutLog.exercise_logs.length / exercises.length) * 100;
+    if (workout) {
+      workoutName = workout.name;
+      programName = workout.program;
+    }
+
     return (
-      <div className='workout-page offset-header'>
+      <div className='exercise-page offset-header'>
         <Header text={`${exerciseName}`} />
         <main className=''>
           <div className='row'>
             <Col number='1' bgSmall='true' className='workout-list'>
               <div className='workout-program d-flex justify-content-between w-100'>
                 <div className='pb-2'>{workoutName}</div>
-                <div className='pb-2'>P90X3</div>
+                <div className='pb-2'>{programName}</div>
               </div>
-              <ProgressBar progress='25' />
+              <ProgressBar progress={`${progress}`} />
               <div className='hidden-sm-down'>
                 {this.state.exercises.map((exerciseObj, i) => {
-                  let { exercise, is_isometric, has_weight, id } = exerciseObj;
+                  let { exercise, is_isometric, has_weight, workout_exercise_id } = exerciseObj;
                   let complete;
                   let exerciseLogIndex = workoutLog.exercise_logs.findIndex(
-                    exerciseLog => exerciseLog.exercise_id === id
+                    exerciseLog => exerciseLog.workout_exercise_id === workout_exercise_id
                   );
-                  exerciseLogIndex >= 0 && !(activeExercise.id === id)
+                  exerciseLogIndex >= 0 &&
+                  !(activeExercise.workout_exercise_id === workout_exercise_id)
                     ? (complete = true)
                     : (complete = false);
+
                   return (
                     <ExerciseItem
                       name={`${exercise}`}
                       weights={`${has_weight}`}
                       isometric={`${is_isometric}`}
                       key={i}
-                      active={activeExercise.id === id}
+                      active={activeExercise.workout_exercise_id === workout_exercise_id}
                       complete={complete}
-                      onClick={() => this.makeActive(id)}
+                      onClick={() => this.makeActive(workout_exercise_id)}
                     />
                   );
                 })}
@@ -247,6 +246,7 @@ class ExercisePage extends React.Component {
               {this.state.exerciseLog ? (
                 <ExerciseForm
                   className='w-100'
+                  exercise={this.state.exercises[this.state.activeExercise]}
                   exerciseLog={this.state.exerciseLog}
                   previousLog={lastExerciseLog}
                   history={this.props.history}
@@ -280,4 +280,4 @@ const mapStateToProps = state => ({
   ...state,
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ExercisePage);
+export default ExercisePage;

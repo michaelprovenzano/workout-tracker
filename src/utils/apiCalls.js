@@ -43,7 +43,7 @@ let requestConstructor = {
       body: JSON.stringify(body),
     });
     const data = await response.json();
-    return data[0];
+    return data;
   },
 };
 
@@ -53,7 +53,7 @@ let api = {
   },
   get: async (route, queryString) => {
     return await requestConstructor.get(
-      `${baseUrl}/${route}/${queryString ? '?' : ''}${queryString}`
+      `${baseUrl}/${route}/${queryString ? '?' : ''}${queryString ? queryString : ''}`
     );
   },
   getOne: async (route, id) => {
@@ -63,6 +63,9 @@ let api = {
   },
   updateOne: async (route, id, body) => {
     return await requestConstructor.patch(`${baseUrl}/${route}/${id}`, body);
+  },
+  patchReq: async (url, body) => {
+    return await requestConstructor.patch(`${baseUrl}/${url}`, body);
   },
 };
 

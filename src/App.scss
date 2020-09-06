@@ -80,6 +80,23 @@ button {
   outline: none;
 }
 
+// Typography & Color
+.bold {
+  font-weight: bold;
+}
+
+.text-primary {
+  color: $primary;
+}
+
+.text-white {
+  color: $white;
+}
+
+.text-danger {
+  color: $danger;
+}
+
 @media (max-width: $breakpoint-tablet) {
   .App {
     padding-top: 46px;

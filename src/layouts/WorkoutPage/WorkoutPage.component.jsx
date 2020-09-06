@@ -2,6 +2,7 @@ import React from 'react';
 import './WorkoutPage.styles.scss';
 
 import { connect } from 'react-redux';
+import { setActiveProgram } from '../../redux/activeProgram/activeProgram.actions';
 import { setActiveWorkoutLog } from '../../redux/activeWorkoutLog/activeWorkoutLog.actions';
 import { setActiveExerciseLog } from '../../redux/activeExerciseLog/activeExerciseLog.actions';
 import { setActiveWorkout } from '../../redux/activeWorkout/activeWorkout.actions';
@@ -29,30 +30,29 @@ class WorkoutPage extends React.Component {
 
   componentDidMount = async () => {
     let { workoutLogId } = this.props.match.params;
-    let exercises = [];
 
     let workoutLog = await api.getOne('workout-logs', workoutLogId);
 
     // Get the workout and set it in redux
-    let workout = await api.getOne('workouts', workoutLog.workout_id);
+    let workout = await api.getOne('workouts', workoutLog.program_workout_id);
     this.props.setActiveWorkout(workout);
 
     // Get current exercise logs
     let exerciseLogs = await api.get('exercise-logs', `workout_log_id=${workoutLogId}`);
     workoutLog.exercise_logs = exerciseLogs;
 
+    // Set in redux
     this.props.setActiveWorkoutLog(workoutLog);
 
     // Create hash table of ids
     let exerciseLogIds = {};
-    exerciseLogs.forEach(item => (exerciseLogIds[item.exercise_id] = item.id));
+    exerciseLogs.forEach(item => (exerciseLogIds[item.exercise_id] = item.exercise_id));
 
     // Get the exercises for the current workout
-    for (let i = 0; i < workout.exercises.length; i++) {
-      let exerciseData = await api.getOne('exercises', workout.exercises[i]);
-      exerciseData.key = i;
-      exercises.push(exerciseData);
-    }
+    let exercises = await api.get(
+      'workout-exercises',
+      `workout_id=${workoutLog.workout_id}&orderBy=exercise_order`
+    );
 
     this.setState(
       {
@@ -66,21 +66,43 @@ class WorkoutPage extends React.Component {
     );
   };
 
-  goToExerciseLog = async (logId, exerciseId) => {
+  goToExerciseLog = async (logId, workoutExerciseId) => {
     let { history } = this.props;
-    let workoutLogId = this.state.workoutLog.id;
-
+    let { workoutLog } = this.state;
+    console.log(logId, workoutExerciseId);
+    let workoutLogId = workoutLog.workout_log_id;
     if (logId) {
       history.push(`/workout-logs/${workoutLogId}/${logId}`);
     } else {
-      let exerciseLog = await api.addOne('exercise-logs', { exercise_id: exerciseId });
-      history.push(`/workout-logs/${workoutLogId}/${exerciseLog.id}`);
+      let exerciseLog = await api.addOne('exercise-logs', {
+        workout_exercise_id: workoutExerciseId,
+      });
+      history.push(`/workout-logs/${workoutLogId}/${exerciseLog.exercise_log_id}`);
     }
   };
 
+  onClick = async () => {
+    let { history } = this.props;
+    let response = await api.patchReq('util/complete-active-workout');
+    if (response.status === 'success') history.push(`/dashboard`);
+  };
+
   render() {
+    const { activeWorkoutLog, activeProgram } = this.props;
+    let { workout, exercises } = this.state;
+
+    if (!activeWorkoutLog && activeProgram && workout) return <div>Loading...</div>;
+
     let name = '';
-    if (this.state.workout) name = this.state.workout.name;
+    if (workout) name = workout.name;
+
+    let buttonText = 'Start';
+    let onClick;
+    if (activeProgram.active_workout_log) buttonText = 'Continue';
+    if (exercises.length === 0) {
+      buttonText = 'Complete';
+      onClick = this.onClick;
+    }
 
     return (
       <div className='workout-page offset-header'>
@@ -92,26 +114,32 @@ class WorkoutPage extends React.Component {
                 <Button text='Skip' type='secondary' position='left' className='flex-grow-1' />
                 <Button text='Postpone' type='secondary' position='right' className='flex-grow-1' />
               </div>
-              <Button text='Start' type='primary' position='center' className='w-100 mb-20px' />
+              <Button
+                text={buttonText}
+                type='primary'
+                position='center'
+                className='w-100 mb-20px'
+                onClick={onClick}
+              />
               <div className='workout-program d-flex justify-content-between w-100'>
                 <div className='pb-2'>{name}</div>
-                <div className='pb-2'>P90X3</div>
+                <div className='pb-2'>Program Name</div>
               </div>
-              <ProgressBar progress='25' />
+              <ProgressBar progress={activeWorkoutLog.progress * 100} />
             </Col>
             <Col number='2' bgLarge='true'>
               {this.state.exercises.map((exerciseObj, i) => {
                 let logId;
-                let { exercise, is_isometric, has_weight, id } = exerciseObj;
-                let hasLog = this.state.exerciseLogIds[exerciseObj.id];
-                if (hasLog) logId = this.state.exerciseLogIds[exerciseObj.id];
+                let { exercise, is_isometric, has_weight, workout_exercise_id } = exerciseObj;
+                let hasLog = this.state.exerciseLogIds[exerciseObj.exercise_id];
+                if (hasLog) logId = this.state.exerciseLogIds[exerciseObj.exercise_log_id];
                 return (
                   <ExerciseItem
                     name={`${exercise}`}
                     weights={`${has_weight}`}
                     isometric={`${is_isometric}`}
                     key={i}
-                    onClick={() => this.goToExerciseLog(logId, id)}
+                    onClick={() => this.goToExerciseLog(logId, workout_exercise_id)}
                     complete={hasLog}
                   />
                 );
@@ -126,6 +154,7 @@ class WorkoutPage extends React.Component {
 
 const mapDispatchToProps = dispatch => ({
   setActiveWorkout: workout => dispatch(setActiveWorkout(workout)),
+  setActiveProgram: program => dispatch(setActiveProgram(program)),
   setActiveWorkoutLog: log => dispatch(setActiveWorkoutLog(log)),
 });
 
