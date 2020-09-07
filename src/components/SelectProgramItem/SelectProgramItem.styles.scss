@@ -1,0 +1,62 @@
+@import '../../styles/variables.scss';
+
+.program-item {
+  width: 100%;
+  height: 72px;
+  font-size: 1.2rem;
+  color: $black;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(#196cff, 0.1);
+  border-radius: 0;
+
+  .cb {
+    display: inline-block;
+    background: $primary;
+    min-width: 0;
+    max-width: 0;
+    height: 100%;
+    overflow: hidden;
+    transition: all 0.1s ease;
+  }
+
+  .checkmark {
+    display: inline-block;
+    position: relative;
+    width: 10px;
+    height: 10px;
+    transform: rotate(45deg);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: calc(90% - 2px);
+      right: 25%;
+      width: 60%;
+      height: 2px;
+      background-color: $white;
+      border-radius: 5000px;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -10%;
+      right: 25%;
+      width: 2px;
+      height: 100%;
+      background-color: $white;
+      border-radius: 5000px;
+    }
+  }
+
+  &.active {
+    color: $primary;
+
+    .cb {
+      min-width: 30px;
+      max-width: 30px;
+      margin-right: 10px;
+    }
+  }
+}

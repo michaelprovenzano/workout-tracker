@@ -1,0 +1,15 @@
+@import '../../styles/variables.scss';
+
+.programs-page {
+  .sticky-bottom {
+    height: 76px;
+  }
+}
+
+@media (max-width: $breakpoint-tablet) {
+  .programs-page {
+  }
+}
+
+@media (max-width: $breakpoint-mobile) {
+}

@@ -45,39 +45,40 @@ class MySchedulePage extends React.Component {
   render() {
     let { programLog, workoutLogs, workouts } = this.state;
     let { history } = this.props;
+
+    // Hash workout logs
     let workoutLogHash = {};
     if (workoutLogs) {
       workoutLogs.forEach((workoutLog, i) => {
-        console.log(workoutLog);
-        workoutLogHash[workoutLog.program_workout_id] = { index: i };
+        workoutLogHash[workoutLog.program_workout_id] = {
+          index: i,
+          ...workoutLog,
+        };
       });
-
-      console.log(workoutLogHash);
     }
 
     return (
       <div className='my-programs-page offset-header'>
-        <Header text='My Programs' />
+        <Header text='My Schedule' />
         <main className=''>
           <div className='row'>
             <Col number='1' bgLarge='true' className='workout-list'>
-              <div className='workout-program d-flex flex-column align-items-center w-100 mb-3'>
-                <div className='bold'>Program Name</div>
-                <small>Current Program</small>
-              </div>
+              {programLog ? (
+                <div className='workout-program d-flex flex-column align-items-center w-100 mb-3'>
+                  <div className='bold'>{programLog.name}</div>
+                  {programLog.status === 'active' ? <small>Current Program</small> : null}
+                </div>
+              ) : null}
               <ProgressBar progress={`25`} />
             </Col>
             <Col number='2'>
-              <header className='header-secondary d-flex align-items-center text-primary w-100'>
-                Week 1
-              </header>
-
               {workouts
                 ? workouts.map((workout, i) => {
-                    let status;
-
+                    let status, workout_log_id;
                     if (workoutLogHash[workout.program_workout_id]) {
-                      let index = workoutLogHash[workout.program_workout_id].index;
+                      let log = workoutLogHash[workout.program_workout_id];
+                      let index = log.index;
+                      workout_log_id = log.workout_log_id;
                       workoutLogs[index].skipped ? (status = 'skipped') : (status = 'complete');
                     }
 
@@ -86,17 +87,24 @@ class MySchedulePage extends React.Component {
                     );
 
                     return (
-                      <ProgramItem
-                        key={i}
-                        id={workout.workout_log_id}
-                        name={workout.name}
-                        date={date}
-                        complete={status === 'complete'}
-                        skipped={status === 'skipped'}
-                        history={history}
-                        url={`/workout-logs/${workout.workout_log_id}`}
-                        workout
-                      />
+                      <div className='w-100'>
+                        {i % 7 === 0 ? (
+                          <header className='header-secondary d-flex align-items-center text-primary w-100'>
+                            Week {(i + 7) / 7}
+                          </header>
+                        ) : null}
+                        <ProgramItem
+                          key={i}
+                          id={workout.workout_log_id}
+                          name={workout.name}
+                          date={date}
+                          complete={status === 'complete'}
+                          skipped={status === 'skipped'}
+                          history={history}
+                          url={`/workout-logs/${workout_log_id}`}
+                          workout
+                        />
+                      </div>
                     );
                   })
                 : null}

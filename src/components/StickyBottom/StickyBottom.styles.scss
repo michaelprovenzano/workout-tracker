@@ -1,0 +1,13 @@
+@import '../../styles/variables.scss';
+
+.sticky-bottom {
+  background-color: $white;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 16px 0;
+  box-shadow: $box-shadow;
+  z-index: 1000;
+}

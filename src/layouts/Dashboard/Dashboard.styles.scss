@@ -1,4 +1,4 @@
-.dash-details-overview {
+.dashboard {
   h2 {
     font-size: 2rem;
     margin-bottom: 6px;
@@ -14,5 +14,10 @@
 
   .stat-row {
     max-width: 283px;
+  }
+
+  .empty-state {
+    height: calc(90vh - 200px);
+    min-height: 180px;
   }
 }

@@ -34,15 +34,19 @@ class WorkoutPage extends React.Component {
     let workoutLog = await api.getOne('workout-logs', workoutLogId);
 
     // Get the workout and set it in redux
-    let workout = await api.getOne('workouts', workoutLog.program_workout_id);
-    this.props.setActiveWorkout(workout);
+    let workout = await api.get(
+      'program-workouts',
+      `program_workout_id=${workoutLog.program_workout_id}`
+    );
+    workout = workout[0];
+    // this.props.setActiveWorkout(workout);
 
     // Get current exercise logs
     let exerciseLogs = await api.get('exercise-logs', `workout_log_id=${workoutLogId}`);
     workoutLog.exercise_logs = exerciseLogs;
 
     // Set in redux
-    this.props.setActiveWorkoutLog(workoutLog);
+    // this.props.setActiveWorkoutLog(workoutLog);
 
     // Create hash table of ids
     let exerciseLogIds = {};
@@ -69,7 +73,6 @@ class WorkoutPage extends React.Component {
   goToExerciseLog = async (logId, workoutExerciseId) => {
     let { history } = this.props;
     let { workoutLog } = this.state;
-    console.log(logId, workoutExerciseId);
     let workoutLogId = workoutLog.workout_log_id;
     if (logId) {
       history.push(`/workout-logs/${workoutLogId}/${logId}`);
@@ -89,7 +92,7 @@ class WorkoutPage extends React.Component {
 
   render() {
     const { activeWorkoutLog, activeProgram } = this.props;
-    let { workout, exercises } = this.state;
+    let { workout, exercises, exerciseLogs } = this.state;
 
     if (!activeWorkoutLog && activeProgram && workout) return <div>Loading...</div>;
 
@@ -103,6 +106,18 @@ class WorkoutPage extends React.Component {
       buttonText = 'Complete';
       onClick = this.onClick;
     }
+
+    // Hash workout logs
+    let exerciseLogHash = {};
+    if (exerciseLogs) {
+      exerciseLogs.forEach((exerciseLog, i) => {
+        exerciseLogHash[exerciseLog.workout_exercise_id] = {
+          index: i,
+          ...exerciseLog,
+        };
+      });
+    }
+    console.log(exerciseLogHash);
 
     return (
       <div className='workout-page offset-header'>
@@ -130,9 +145,11 @@ class WorkoutPage extends React.Component {
             <Col number='2' bgLarge='true'>
               {this.state.exercises.map((exerciseObj, i) => {
                 let logId;
+
                 let { exercise, is_isometric, has_weight, workout_exercise_id } = exerciseObj;
-                let hasLog = this.state.exerciseLogIds[exerciseObj.exercise_id];
-                if (hasLog) logId = this.state.exerciseLogIds[exerciseObj.exercise_log_id];
+                let hasLog = exerciseLogHash[exerciseObj.workout_exercise_id];
+                if (hasLog) logId = hasLog.exercise_log_id;
+
                 return (
                   <ExerciseItem
                     name={`${exercise}`}
@@ -153,9 +170,9 @@ class WorkoutPage extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  setActiveWorkout: workout => dispatch(setActiveWorkout(workout)),
+  // setActiveWorkout: workout => dispatch(setActiveWorkout(workout)),
   setActiveProgram: program => dispatch(setActiveProgram(program)),
-  setActiveWorkoutLog: log => dispatch(setActiveWorkoutLog(log)),
+  // setActiveWorkoutLog: log => dispatch(setActiveWorkoutLog(log)),
 });
 
 const mapStateToProps = state => ({

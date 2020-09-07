@@ -13,6 +13,7 @@ import StatRing from '../../components/StatRing/StatRing.component';
 import WorkoutSticky from '../../components/WorkoutSticky/WorkoutSticky.component';
 
 import Col from '../Col/Col.component';
+import Button from '../../components/Button/Button.component';
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -52,11 +53,18 @@ class Dashboard extends React.Component {
   };
 
   getData = async () => {
+    let activeWorkout, nextWorkout;
     let activeProgram = await this.getActiveProgram();
-    let activeWorkout = await this.getActiveWorkoutLog(activeProgram.active_workout_log);
-    let nextWorkout = await this.getNextWorkout(activeProgram);
+    if (activeProgram)
+      activeWorkout = await this.getActiveWorkoutLog(activeProgram.active_workout_log);
+    if (activeProgram) nextWorkout = await this.getNextWorkout(activeProgram);
 
     return { activeProgram, activeWorkout, nextWorkout };
+  };
+
+  browsePrograms = async () => {
+    let { history } = this.props;
+    history.push('/programs');
   };
 
   componentDidMount = () => {
@@ -78,31 +86,49 @@ class Dashboard extends React.Component {
           />
         ) : null}
 
-        <main className='content'>
-          <div className='row'>
-            <Col number='1'>
-              <div className='d-flex justify-content-end align-items-center align-self-end mb-5'>
-                <div className='d-flex flex-column align-items-end progress-text'>
-                  <h2 className='mt-0'>P90X3</h2>
-                  <small>Current Program</small>
+        <main className='content dashboard'>
+          {activeProgram ? (
+            <div className='row'>
+              <Col number='1'>
+                <div className='d-flex justify-content-end align-items-center align-self-end mb-5'>
+                  <div className='d-flex flex-column align-items-end progress-text'>
+                    <h2 className='mt-0'>P90X3</h2>
+                    <small>Current Program</small>
+                  </div>
+                  <ProgressRing radius='55' stroke='5' progress='50' />
                 </div>
-                <ProgressRing radius='55' stroke='5' progress='50' />
+                <div className='d-flex justify-content-between align-items-start w-100 pb-5'>
+                  <StatRing unit='days' quantity='0' stat='Completed' />
+                  <StatRing unit='days' quantity='90' stat='Remaining' />
+                  <StatRing unit='days' quantity='0' stat='Skipped' />
+                </div>
+                <div className='d-flex justify-content-between align-items-start w-100 pb-5'>
+                  <StatRing unit='days' quantity='0' stat='Current Streak' />
+                  <StatRing unit='days' quantity='90' stat='Best Streak' />
+                  <StatRing unit='lbs' quantity='0' stat='Weight Lifted' />
+                </div>
+              </Col>
+              <Col number='2'>
+                {/* {hasExercises ? <div>`${JSON.stringify(this.state.exercises)}`</div> : null} */}
+              </Col>
+            </div>
+          ) : (
+            <div className='row'>
+              <div className='empty-state col-md-6 offset-md-3 d-flex flex-column align-items-center justify-content-center'>
+                <h4 className='text-12 text-primary bold pb-4'>Let's Get Started!</h4>
+                <p className='text-12 text-primary pb-4'>
+                  Don’t be shy! It’s time to flex your muscles and show yourself what you’re made
+                  of. Select a program!
+                </p>
+                <Button
+                  text='Start a new program'
+                  type='primary'
+                  className='w-100'
+                  onClick={this.browsePrograms}
+                />
               </div>
-              <div className='d-flex justify-content-between align-items-start w-100 pb-5'>
-                <StatRing unit='days' quantity='0' stat='Completed' />
-                <StatRing unit='days' quantity='90' stat='Remaining' />
-                <StatRing unit='days' quantity='0' stat='Skipped' />
-              </div>
-              <div className='d-flex justify-content-between align-items-start w-100 pb-5'>
-                <StatRing unit='days' quantity='0' stat='Current Streak' />
-                <StatRing unit='days' quantity='90' stat='Best Streak' />
-                <StatRing unit='lbs' quantity='0' stat='Weight Lifted' />
-              </div>
-            </Col>
-            <Col number='2'>
-              {/* {hasExercises ? <div>`${JSON.stringify(this.state.exercises)}`</div> : null} */}
-            </Col>
-          </div>
+            </div>
+          )}
         </main>
       </div>
     );
