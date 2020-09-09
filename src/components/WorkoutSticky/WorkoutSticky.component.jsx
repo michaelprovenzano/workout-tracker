@@ -14,22 +14,20 @@ class WorkoutSticky extends React.Component {
     super();
     this.props = props;
     this.state = {
-      referrer: '/dashboard',
+      redirect: undefined,
     };
   }
 
   onClick = async () => {
-    let { activeProgram, nextWorkout, setActiveWorkoutLog, history } = this.props;
-    let workoutLogId = activeProgram.active_workout_log;
+    let { activeProgramLog, nextWorkout, history } = this.props;
+    let workoutLogId = activeProgramLog.active_workout_log;
 
     // Check if next workout is already started (check for active workout log property)
     if (!workoutLogId) {
       // If there's no log, create a new workout log for the current program and make it the active workout log
       let workoutLog = await api.addOne('workout-logs', {
         program_workout_id: nextWorkout.program_workout_id,
-        program_log_id: activeProgram.program_log_id,
-        date: new Date(Date.now()),
-        created_at: new Date(Date.now()),
+        program_log_id: activeProgramLog.program_log_id,
       });
 
       if (workoutLog) workoutLogId = workoutLog.workout_log_id;
@@ -40,7 +38,7 @@ class WorkoutSticky extends React.Component {
   };
 
   render() {
-    let { nextWorkout, activeWorkout } = this.props;
+    let { nextWorkout, activeWorkout, skip, postpone } = this.props;
     let buttonText;
 
     activeWorkout ? (buttonText = 'Continue Workout') : (buttonText = 'Start Workout');
@@ -49,8 +47,8 @@ class WorkoutSticky extends React.Component {
       <div className='workout-sticky row'>
         <div className='col-md-8 offset-md-2 col-sm-12 d-flex align-items-center flex-column'>
           <div className='d-flex justify-content-between w-100'>
-            <Button text='Skip' position='left' type='secondary' />
-            <Button text='Postpone' position='right' type='secondary' />
+            <Button text='Skip' position='left' type='secondary' onClick={skip} />
+            <Button text='Postpone' position='right' type='secondary' onClick={postpone} />
           </div>
           {activeWorkout ? <small>Today's Workout</small> : <small>Next Workout</small>}
           <h2>{activeWorkout ? activeWorkout.name : nextWorkout.name}</h2>

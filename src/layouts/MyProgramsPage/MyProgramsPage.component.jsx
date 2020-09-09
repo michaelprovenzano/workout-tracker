@@ -24,6 +24,15 @@ class MyProgramsPage extends React.Component {
     };
   }
 
+  abandonCurrentProgram = async () => {
+    let { activeProgramLog } = this.state;
+    let response = await api.patchReq(
+      `util/abandon-program-log/${activeProgramLog.program_log_id}`,
+      {}
+    );
+    console.log(response);
+  };
+
   componentDidMount = () => {
     this.setData();
   };
@@ -33,9 +42,16 @@ class MyProgramsPage extends React.Component {
     let programLogs = await api.get('program-logs');
 
     // Get index of exercise log
-    let activeProgramLog = programLogs.findIndex(log => log.status === 'active');
+    let activeProgramLogIndex = programLogs.findIndex(log => log.status === 'active');
+    let activeProgramLog = programLogs[activeProgramLogIndex];
 
     this.setState({ programLogs, activeProgramLog }, () => console.log(this.state));
+  };
+
+  goToCurrentSchedule = () => {
+    let { activeProgramLog } = this.state;
+    let { history } = this.props;
+    history.push(`/program-logs/${activeProgramLog.program_log_id}`);
   };
 
   render() {
@@ -49,21 +65,31 @@ class MyProgramsPage extends React.Component {
           <div className='row'>
             <Col number='1' bgLarge='true' className='workout-list'>
               <div className='workout-program d-flex flex-column align-items-center w-100 mb-3'>
-                <div className='bold'>
-                  {programLogs ? programLogs[activeProgramLog].name : null}
-                </div>
+                <div className='bold'>{activeProgramLog ? activeProgramLog.name : null}</div>
                 <small>Current Program</small>
               </div>
               <ProgressBar progress={`25`} />
               <div className='row w-100 btn-group'>
                 <div className='col-4 col-md-12'>
-                  <Button text='Abandon' type='danger' position='center' className='w-100' />
+                  <Button
+                    text='Abandon'
+                    type='danger'
+                    position='center'
+                    className='w-100'
+                    onClick={this.abandonCurrentProgram}
+                  />
                 </div>
                 <div className='col-4 col-md-12'>
                   <Button text='Stats' type='primary' position='center' className='w-100' />
                 </div>
                 <div className='col-4 col-md-12'>
-                  <Button text='Schedule' type='primary' position='center' className='w-100' />
+                  <Button
+                    text='Schedule'
+                    type='primary'
+                    position='center'
+                    className='w-100'
+                    onClick={this.goToCurrentSchedule}
+                  />
                 </div>
               </div>
             </Col>
@@ -78,6 +104,8 @@ class MyProgramsPage extends React.Component {
                       log.workout_schedule[log.workout_schedule.length - 1]
                     ).format('MM/DD/YYYY');
 
+                    let abandoned = log.status === 'abandoned';
+
                     return (
                       <ProgramItem
                         key={i}
@@ -85,34 +113,12 @@ class MyProgramsPage extends React.Component {
                         dateRange={`${startDate} - ${endDate}`}
                         history={history}
                         url={`/program-logs/${log.program_log_id}`}
+                        abandoned={abandoned}
                         program
                       />
                     );
                   })
                 : null}
-              {/* <div className='hidden-sm-down'>
-                {this.state.exercises.map((exerciseObj, i) => {
-                  let { exercise, is_isometric, has_weight, id } = exerciseObj;
-                  let complete;
-                  let exerciseLogIndex = workoutLog.exercise_logs.findIndex(
-                    exerciseLog => exerciseLog.exercise_id === id
-                  );
-                  exerciseLogIndex >= 0 && !(activeExercise.id === id)
-                    ? (complete = true)
-                    : (complete = false);
-                  return (
-                    <ExerciseItem
-                      name={`${exercise}`}
-                      weights={`${has_weight}`}
-                      isometric={`${is_isometric}`}
-                      key={i}
-                      active={activeExercise.id === id}
-                      complete={complete}
-                      onClick={() => this.makeActive(id)}
-                    />
-                  );
-                })}
-              </div> */}
             </Col>
           </div>
         </main>

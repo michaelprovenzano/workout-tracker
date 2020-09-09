@@ -21,6 +21,7 @@ class WorkoutPage extends React.Component {
 
     this.props = props;
     this.state = {
+      workoutLog: undefined,
       workout: undefined,
       exercises: [],
       exerciseLogs: [],
@@ -31,7 +32,9 @@ class WorkoutPage extends React.Component {
   componentDidMount = async () => {
     let { workoutLogId } = this.props.match.params;
 
+    console.log(workoutLogId);
     let workoutLog = await api.getOne('workout-logs', workoutLogId);
+    let activeProgramLog = await api.getOne('program-logs', workoutLog.program_log_id);
 
     // Get the workout and set it in redux
     let workout = await api.get(
@@ -60,6 +63,7 @@ class WorkoutPage extends React.Component {
 
     this.setState(
       {
+        activeProgramLog,
         workoutLog,
         workout,
         exercises,
@@ -73,7 +77,9 @@ class WorkoutPage extends React.Component {
   goToExerciseLog = async (logId, workoutExerciseId) => {
     let { history } = this.props;
     let { workoutLog } = this.state;
-    let workoutLogId = workoutLog.workout_log_id;
+    let workoutLogId;
+
+    if (workoutLog) workoutLogId = workoutLog.workout_log_id;
     if (logId) {
       history.push(`/workout-logs/${workoutLogId}/${logId}`);
     } else {
@@ -84,15 +90,33 @@ class WorkoutPage extends React.Component {
     }
   };
 
-  onClick = async () => {
+  onClick = async e => {
     let { history } = this.props;
-    let response = await api.patchReq('util/complete-active-workout');
-    if (response.status === 'success') history.push(`/dashboard`);
+    let { exercises, exerciseLogs, workoutLog, activeProgramLog } = this.state;
+    let workoutLogId = workoutLog.workout_log_id;
+
+    // TODO: If workout has no exercises, change to complete current workout
+    if (exercises.length === 0) {
+      if (activeProgramLog.active_workout_log === workoutLog.workout_log_id) {
+        let response = await api.patchReq('util/complete-active-workout');
+        if (response.status === 'success') history.push(`/dashboard`);
+      } else {
+        let response = await api.updateOne('workout-logs', workoutLogId, { progress: 1 });
+        if (response) history.push(`/dashboard`);
+      }
+      // TODO: If workout has exercises, go to last completed exercise log
+    } else {
+      history.push(
+        `/workout-logs/${workoutLog.workout_log_id}/${
+          exerciseLogs[exerciseLogs.length - 1].exercise_log_id
+        }`
+      );
+    }
   };
 
   render() {
     const { activeWorkoutLog, activeProgram } = this.props;
-    let { workout, exercises, exerciseLogs } = this.state;
+    let { workout, exercises, exerciseLogs, workoutLog, activeProgramLog } = this.state;
 
     if (!activeWorkoutLog && activeProgram && workout) return <div>Loading...</div>;
 
@@ -100,12 +124,7 @@ class WorkoutPage extends React.Component {
     if (workout) name = workout.name;
 
     let buttonText = 'Start';
-    let onClick;
-    if (activeProgram.active_workout_log) buttonText = 'Continue';
-    if (exercises.length === 0) {
-      buttonText = 'Complete';
-      onClick = this.onClick;
-    }
+    if (exerciseLogs.length > 0) buttonText = 'Continue';
 
     // Hash workout logs
     let exerciseLogHash = {};
@@ -117,7 +136,6 @@ class WorkoutPage extends React.Component {
         };
       });
     }
-    console.log(exerciseLogHash);
 
     return (
       <div className='workout-page offset-header'>
@@ -134,16 +152,16 @@ class WorkoutPage extends React.Component {
                 type='primary'
                 position='center'
                 className='w-100 mb-20px'
-                onClick={onClick}
+                onClick={this.onClick}
               />
               <div className='workout-program d-flex justify-content-between w-100'>
                 <div className='pb-2'>{name}</div>
-                <div className='pb-2'>Program Name</div>
+                <div className='pb-2'>{activeProgramLog ? activeProgramLog.name : 'null'}</div>
               </div>
-              <ProgressBar progress={activeWorkoutLog.progress * 100} />
+              {workoutLog ? <ProgressBar progress={workoutLog.progress * 100} /> : null}
             </Col>
             <Col number='2' bgLarge='true'>
-              {this.state.exercises.map((exerciseObj, i) => {
+              {exercises.map((exerciseObj, i) => {
                 let logId;
 
                 let { exercise, is_isometric, has_weight, workout_exercise_id } = exerciseObj;
@@ -179,4 +197,4 @@ const mapStateToProps = state => ({
   ...state,
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(WorkoutPage);
+export default WorkoutPage;

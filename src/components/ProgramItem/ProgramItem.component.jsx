@@ -23,14 +23,17 @@ class ProgramItem extends React.Component {
       complete,
       skipped,
       abandoned,
+      abandonedAfter,
       date,
       dateRange,
       program,
       workout,
       classes,
+      onClick,
+      id,
     } = this.props;
     let day;
-    let days = '91';
+    let days = '90';
 
     if (date) {
       let newDate = moment(date);
@@ -40,10 +43,11 @@ class ProgramItem extends React.Component {
 
     return (
       <button
+        id={id}
         className={`program-item outline-none ${abandoned ? 'abandoned' : ''} ${
           complete ? 'complete' : ''
-        } ${classes ? classes : ''}`}
-        onClick={this.onClick}
+        } ${skipped ? 'skipped' : ''} ${classes ? classes : ''}`}
+        onClick={onClick ? onClick : this.onClick}
       >
         <div className='d-flex justify-content-between'>
           <div className='d-flex flex-column justify-content-center align-items-start'>
@@ -63,7 +67,7 @@ class ProgramItem extends React.Component {
                 }`}
               >
                 {complete && program ? `Completed in ${days} days` : ''}
-                {abandoned && program ? `Abandoned after ${days} days` : ''}
+                {abandoned && program ? `Abandoned after ${abandonedAfter} days` : ''}
                 {!complete && !abandoned && program ? 'In progress' : ''}
                 {complete && workout ? `Completed` : ''}
                 {skipped && workout ? `Skipped` : ''}

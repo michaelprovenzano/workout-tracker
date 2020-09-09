@@ -19,32 +19,28 @@ class Dashboard extends React.Component {
   constructor(props) {
     super();
     this.state = {
-      activeProgram: null,
-      activeWorkout: null,
+      activeProgramLog: null,
+      activeWorkoutLog: null,
       nextWorkout: null,
     };
   }
 
   getActiveProgram = async () => {
-    let activeProgram = await api.get('program-logs', `status=active`);
-    return activeProgram[0];
+    let activeProgramLog = await api.get('program-logs', `status=active`);
+    return activeProgramLog[0];
   };
 
   getActiveWorkoutLog = async workoutLogId => {
     let activeWorkoutLog = await api.getOne('workout-logs', workoutLogId);
-
-    let activeWorkout;
-    if (activeWorkoutLog) activeWorkout = await api.getOne('workouts', activeWorkoutLog.workout_id);
-
-    return activeWorkout;
+    return activeWorkoutLog;
   };
 
-  getNextWorkout = async activeProgram => {
+  getNextWorkout = async activeProgramLog => {
     let nextWorkout;
-    if (activeProgram) {
+    if (activeProgramLog) {
       nextWorkout = await api.get(
         'program-workouts',
-        `program_workout_id=${activeProgram.next_workout}`
+        `program_workout_id=${activeProgramLog.next_program_workout}`
       );
       nextWorkout = nextWorkout[0];
     }
@@ -53,13 +49,13 @@ class Dashboard extends React.Component {
   };
 
   getData = async () => {
-    let activeWorkout, nextWorkout;
-    let activeProgram = await this.getActiveProgram();
-    if (activeProgram)
-      activeWorkout = await this.getActiveWorkoutLog(activeProgram.active_workout_log);
-    if (activeProgram) nextWorkout = await this.getNextWorkout(activeProgram);
+    let activeWorkoutLog, nextWorkout;
+    let activeProgramLog = await this.getActiveProgram();
+    if (activeProgramLog && activeProgramLog.active_workout_log)
+      activeWorkoutLog = await this.getActiveWorkoutLog(activeProgramLog.active_workout_log);
+    if (activeProgramLog) nextWorkout = await this.getNextWorkout(activeProgramLog);
 
-    return { activeProgram, activeWorkout, nextWorkout };
+    return { activeProgramLog, activeWorkoutLog, nextWorkout };
   };
 
   browsePrograms = async () => {
@@ -68,31 +64,59 @@ class Dashboard extends React.Component {
   };
 
   componentDidMount = () => {
+    this.updateData();
+  };
+
+  skipWorkout = async () => {
+    await api.patchReq('util/skip-workout', {}).then(() => this.updateData());
+  };
+
+  postponeWorkout = async () => {
+    let { nextWorkout, activeProgramLog, activeWorkoutLog } = this.state;
+    let response;
+
+    if (activeWorkoutLog) {
+      let { days_postponed } = activeWorkoutLog;
+      response = await api.updateOne('workout-logs', activeProgramLog.active_workout_log, {
+        days_postponed: days_postponed + 1,
+      });
+      this.setState({ activeWorkoutLog: response });
+    } else {
+      response = await api.addOne('workout-logs', {
+        program_log_id: activeProgramLog.program_log_id,
+        program_workout_id: nextWorkout.program_workout_id,
+      });
+    }
+  };
+
+  updateData = () => {
     this.getData().then(response => this.setState(response, () => console.log(this.state)));
   };
 
   render() {
-    let { nextWorkout, activeProgram, activeWorkout } = this.state;
+    let { nextWorkout, activeProgramLog, activeWorkoutLog } = this.state;
 
     return (
       <div className='offset-header'>
         <Header text='Dashboard' />
-        {activeProgram ? (
+        {activeProgramLog ? (
           <WorkoutSticky
-            activeProgram={activeProgram}
-            activeWorkout={activeWorkout}
+            activeProgramLog={activeProgramLog}
+            activeWorkout={activeWorkoutLog}
             nextWorkout={nextWorkout}
+            skip={this.skipWorkout}
+            postpone={this.postponeWorkout}
             history={this.props.history}
           />
         ) : null}
 
         <main className='content dashboard'>
-          {activeProgram ? (
+          {activeProgramLog ? (
             <div className='row'>
               <Col number='1'>
                 <div className='d-flex justify-content-end align-items-center align-self-end mb-5'>
                   <div className='d-flex flex-column align-items-end progress-text'>
-                    <h2 className='mt-0'>P90X3</h2>
+                    <h2 className='mt-0'>{activeProgramLog.name}</h2>
                     <small>Current Program</small>
                   </div>
                   <ProgressRing radius='55' stroke='5' progress='50' />
@@ -135,14 +159,14 @@ class Dashboard extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  currentUser: state.user.currentUser,
-});
+// const mapStateToProps = state => ({
+//   currentUser: state.user.currentUser,
+// });
 
-const mapDispatchToProps = dispatch => ({
-  setActiveProgram: program => dispatch(setActiveProgram(program)),
-  setActiveWorkout: workout => dispatch(setActiveWorkout(workout)),
-  setNextWorkout: workout => dispatch(setNextWorkout(workout)),
-});
+// const mapDispatchToProps = dispatch => ({
+//   setActiveProgram: program => dispatch(setActiveProgram(program)),
+//   setActiveWorkout: workout => dispatch(setActiveWorkout(workout)),
+//   setNextWorkout: workout => dispatch(setNextWorkout(workout)),
+// });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
+export default Dashboard;

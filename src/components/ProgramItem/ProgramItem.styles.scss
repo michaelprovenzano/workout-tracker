@@ -70,7 +70,8 @@
     }
   }
 
-  &.abandoned {
+  &.abandoned,
+  &.skipped {
     .status-icon {
       border: none;
 
@@ -96,6 +97,7 @@
     }
 
     .status {
+      color: $danger;
       opacity: 1;
     }
 

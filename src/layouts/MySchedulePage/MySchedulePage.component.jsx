@@ -42,9 +42,44 @@ class MySchedulePage extends React.Component {
     this.setState({ programLog, workoutLogs, workouts }, () => console.log(this.state));
   };
 
+  goToWorkoutLog = async e => {
+    let { workouts, workoutLogs, programLog } = this.state;
+    let { history } = this.props;
+
+    let workoutIndex = parseInt(e.target.closest('button').id);
+    let clickedWorkout = workouts[workoutIndex];
+
+    // Check for a workout log
+    let workoutLogIndex = workoutLogs.findIndex(
+      item => item.program_workout_id === clickedWorkout.program_workout_id
+    );
+
+    if (workoutLogIndex === -1) {
+      // Get the date for workout
+      let workoutDate = programLog.workout_schedule[workoutIndex];
+
+      // Create the log
+      let response = await api.addOne('workout-logs', {
+        program_log_id: programLog.program_log_id,
+        program_workout_id: clickedWorkout.program_workout_id,
+        date: workoutDate,
+        active: false,
+      });
+
+      // Redirect
+      history.push(`/workout-logs/${response.workout_log_id}`);
+    } else {
+      let workoutLog = workoutLogs[workoutLogIndex];
+      history.push(`/workout-logs/${workoutLog.workout_log_id}`);
+    }
+  };
+
   render() {
     let { programLog, workoutLogs, workouts } = this.state;
     let { history } = this.props;
+
+    let currentWorkoutDate;
+    if (programLog) currentWorkoutDate = moment(programLog.start_date);
 
     // Hash workout logs
     let workoutLogHash = {};
@@ -75,33 +110,39 @@ class MySchedulePage extends React.Component {
               {workouts
                 ? workouts.map((workout, i) => {
                     let status, workout_log_id;
+
+                    let increment = 1;
+                    if (i === 0) increment = 0;
+                    currentWorkoutDate = moment(currentWorkoutDate)
+                      .add(increment, 'days')
+                      .format('MM/DD/YYYY');
+
                     if (workoutLogHash[workout.program_workout_id]) {
                       let log = workoutLogHash[workout.program_workout_id];
                       let index = log.index;
                       workout_log_id = log.workout_log_id;
                       workoutLogs[index].skipped ? (status = 'skipped') : (status = 'complete');
+                      currentWorkoutDate = moment(log.date).format('MM/DD/YYYY');
+                      console.log(log);
                     }
 
-                    let date = moment(programLog.workout_schedule[workout.workout_order]).format(
-                      'MM/DD/YYYY'
-                    );
-
                     return (
-                      <div className='w-100'>
+                      <div className='w-100 d-flex flex-column align-items-center'>
                         {i % 7 === 0 ? (
-                          <header className='header-secondary d-flex align-items-center text-primary w-100'>
+                          <header className='header-secondary w-100 d-flex align-items-center text-primary'>
                             Week {(i + 7) / 7}
                           </header>
                         ) : null}
                         <ProgramItem
                           key={i}
-                          id={workout.workout_log_id}
+                          id={i}
                           name={workout.name}
-                          date={date}
+                          date={currentWorkoutDate}
                           complete={status === 'complete'}
                           skipped={status === 'skipped'}
                           history={history}
                           url={`/workout-logs/${workout_log_id}`}
+                          onClick={this.goToWorkoutLog}
                           workout
                         />
                       </div>
@@ -116,12 +157,12 @@ class MySchedulePage extends React.Component {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  setActiveExerciseLog: log => dispatch(setActiveExerciseLog(log)),
-});
+// const mapDispatchToProps = dispatch => ({
+//   setActiveExerciseLog: log => dispatch(setActiveExerciseLog(log)),
+// });
 
-const mapStateToProps = state => ({
-  ...state,
-});
+// const mapStateToProps = state => ({
+//   ...state,
+// });
 
-export default connect(mapStateToProps, mapDispatchToProps)(MySchedulePage);
+export default MySchedulePage;
