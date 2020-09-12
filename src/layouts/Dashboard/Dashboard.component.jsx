@@ -9,6 +9,7 @@ import { setNextWorkout } from '../../redux/nextWorkout/nextWorkout.actions';
 
 import Header from '../../components/Header/Header.component';
 import ProgressRing from '../../components/ProgressRing/ProgressRing.component';
+import ProgressCalendar from '../../components/ProgressCalendar/ProgressCalendar.component';
 import StatRing from '../../components/StatRing/StatRing.component';
 import WorkoutSticky from '../../components/WorkoutSticky/WorkoutSticky.component';
 
@@ -22,6 +23,7 @@ class Dashboard extends React.Component {
       activeProgramLog: null,
       activeWorkoutLog: null,
       nextWorkout: null,
+      stats: null,
     };
   }
 
@@ -49,13 +51,22 @@ class Dashboard extends React.Component {
   };
 
   getData = async () => {
-    let activeWorkoutLog, nextWorkout;
+    let activeWorkoutLog, nextWorkout, stats;
     let activeProgramLog = await this.getActiveProgram();
     if (activeProgramLog && activeProgramLog.active_workout_log)
       activeWorkoutLog = await this.getActiveWorkoutLog(activeProgramLog.active_workout_log);
-    if (activeProgramLog) nextWorkout = await this.getNextWorkout(activeProgramLog);
+    if (activeProgramLog) {
+      nextWorkout = await this.getNextWorkout(activeProgramLog);
+      stats = await this.getStats(activeProgramLog.program_log_id);
+    }
 
-    return { activeProgramLog, activeWorkoutLog, nextWorkout };
+    return { activeProgramLog, activeWorkoutLog, nextWorkout, stats };
+  };
+
+  getStats = async programLogId => {
+    let stats;
+    if (programLogId) stats = await api.get(`util/program-log-stats/${programLogId}`);
+    return stats.data;
   };
 
   browsePrograms = async () => {
@@ -94,7 +105,7 @@ class Dashboard extends React.Component {
   };
 
   render() {
-    let { nextWorkout, activeProgramLog, activeWorkoutLog } = this.state;
+    let { nextWorkout, activeProgramLog, activeWorkoutLog, stats } = this.state;
 
     return (
       <div className='offset-header'>
@@ -119,21 +130,29 @@ class Dashboard extends React.Component {
                     <h2 className='mt-0'>{activeProgramLog.name}</h2>
                     <small>Current Program</small>
                   </div>
-                  <ProgressRing radius='55' stroke='5' progress='50' />
+                  <ProgressRing
+                    radius='55'
+                    stroke='5'
+                    progress={Math.round(stats.progress * 100)}
+                  />
                 </div>
                 <div className='d-flex justify-content-between align-items-start w-100 pb-5'>
-                  <StatRing unit='days' quantity='0' stat='Completed' />
-                  <StatRing unit='days' quantity='90' stat='Remaining' />
-                  <StatRing unit='days' quantity='0' stat='Skipped' />
+                  <StatRing unit='days' quantity={stats.totalCompletedWorkouts} stat='Completed' />
+                  <StatRing unit='days' quantity={stats.totalRemainingWorkouts} stat='Remaining' />
+                  <StatRing unit='days' quantity={stats.totalSkippedWorkouts} stat='Skipped' />
                 </div>
                 <div className='d-flex justify-content-between align-items-start w-100 pb-5'>
-                  <StatRing unit='days' quantity='0' stat='Current Streak' />
-                  <StatRing unit='days' quantity='90' stat='Best Streak' />
-                  <StatRing unit='lbs' quantity='0' stat='Weight Lifted' />
+                  <StatRing unit='days' quantity={stats.currentStreak} stat='Current Streak' />
+                  <StatRing unit='days' quantity={stats.bestStreak} stat='Best Streak' />
+                  <StatRing
+                    unit='lbs'
+                    quantity={stats.totalWeightLifted || 0}
+                    stat='Weight Lifted'
+                  />
                 </div>
               </Col>
               <Col number='2'>
-                {/* {hasExercises ? <div>`${JSON.stringify(this.state.exercises)}`</div> : null} */}
+                <ProgressCalendar calendar={stats.calendar} />
               </Col>
             </div>
           ) : (

@@ -8,9 +8,12 @@
     top: 0;
     left: 0;
 
+    &:first-of-type {
+      transform: rotate(270deg);
+    }
+
     &:nth-of-type(2) {
       z-index: -1;
-      transform: rotate(270deg);
     }
   }
 
