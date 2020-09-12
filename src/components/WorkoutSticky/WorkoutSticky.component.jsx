@@ -46,9 +46,14 @@ class WorkoutSticky extends React.Component {
     return (
       <div className='workout-sticky row'>
         <div className='col-md-8 offset-md-2 col-sm-12 d-flex align-items-center flex-column'>
-          <div className='d-flex justify-content-between w-100'>
-            <Button text='Skip' position='left' type='secondary' onClick={skip} />
-            <Button text='Postpone' position='right' type='secondary' onClick={postpone} />
+          <div className='d-flex w-100'>
+            <Button
+              className='skip-button'
+              text='Skip'
+              position='left'
+              type='secondary'
+              onClick={skip}
+            />
           </div>
           {activeWorkout ? <small>Today's Workout</small> : <small>Next Workout</small>}
           <h2>{activeWorkout ? activeWorkout.name : nextWorkout.name}</h2>

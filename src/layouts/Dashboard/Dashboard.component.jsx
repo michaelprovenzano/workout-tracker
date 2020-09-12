@@ -106,6 +106,7 @@ class Dashboard extends React.Component {
 
   render() {
     let { nextWorkout, activeProgramLog, activeWorkoutLog, stats } = this.state;
+    console.log(this.state);
 
     return (
       <div className='offset-header'>

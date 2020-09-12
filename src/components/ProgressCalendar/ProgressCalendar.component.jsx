@@ -9,7 +9,11 @@ const ProgressCalendar = props => {
       <div className='calendar'>
         {calendar.map((item, i) => (
           <div className='calendar-day-container'>
-            <div className={`calendar-day ${item.complete ? 'complete' : ''}`}>
+            <div
+              className={`calendar-day ${item.skipped ? 'skipped' : ''} ${
+                item.complete && !item.skipped ? 'complete' : ''
+              }`}
+            >
               <div className='calendar-day-text text-16'>{i + 1}</div>
             </div>
           </div>
