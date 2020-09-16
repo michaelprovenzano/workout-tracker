@@ -34,6 +34,10 @@
       opacity: 1;
     }
 
+    .arrow {
+      display: inline-block;
+    }
+
     .status-icon {
       background-color: $primary;
       border: 1px solid $primary;
@@ -72,6 +76,14 @@
 
   &.abandoned,
   &.skipped {
+    .arrow {
+      display: inline-block;
+
+      & > * {
+        background-color: $danger;
+      }
+    }
+
     .status-icon {
       border: none;
 
@@ -99,10 +111,6 @@
     .status {
       color: $danger;
       opacity: 1;
-    }
-
-    .arrow {
-      display: none;
     }
 
     svg {

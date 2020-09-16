@@ -23,6 +23,8 @@ class Dashboard extends React.Component {
       activeProgramLog: null,
       activeWorkoutLog: null,
       nextWorkout: null,
+      workoutLogs: null,
+      workouts: null,
       stats: null,
     };
   }
@@ -32,30 +34,43 @@ class Dashboard extends React.Component {
     return activeProgramLog[0];
   };
 
-  getActiveWorkoutLog = async workoutLogId => {
-    let activeWorkoutLog = await api.getOne('workout-logs', workoutLogId);
-    return activeWorkoutLog;
+  getActiveWorkoutLog = async () => {
+    let activeWorkoutLog = await api.get('workout-logs', 'active=true');
+    return activeWorkoutLog[0];
   };
 
   getNextWorkout = async activeProgramLog => {
-    let nextWorkout;
-    if (activeProgramLog) {
-      nextWorkout = await api.get(
-        'program-workouts',
-        `program_workout_id=${activeProgramLog.next_program_workout}`
-      );
-      nextWorkout = nextWorkout[0];
+    let workouts = await api.get(
+      'program-workouts',
+      `program_id=${activeProgramLog.program_id}&orderBy=workout_order`
+    );
+    let workoutLogs = await api.get(
+      'workout-logs',
+      `program_log_id=${activeProgramLog.program_log_id}&orderBy=workout_order`
+    );
+
+    // Set the state
+    this.setState({ workouts, workoutLogs }, () => console.log(this.state));
+
+    // If starting a new program, set the first workout
+    if (workoutLogs.length === 0) return workouts[0];
+
+    for (let i = workouts.length - 1; i >= 0; i--) {
+      let thisWorkout = workouts[i];
+      if (thisWorkout.workout_order === workoutLogs[workoutLogs.length - 1].workout_order) {
+        return workouts[i + 1];
+      }
     }
 
-    return nextWorkout;
+    return undefined;
   };
 
   getData = async () => {
     let activeWorkoutLog, nextWorkout, stats;
     let activeProgramLog = await this.getActiveProgram();
-    if (activeProgramLog && activeProgramLog.active_workout_log)
-      activeWorkoutLog = await this.getActiveWorkoutLog(activeProgramLog.active_workout_log);
+
     if (activeProgramLog) {
+      activeWorkoutLog = await this.getActiveWorkoutLog(activeProgramLog);
       nextWorkout = await this.getNextWorkout(activeProgramLog);
       stats = await this.getStats(activeProgramLog.program_log_id);
     }
@@ -78,25 +93,39 @@ class Dashboard extends React.Component {
     this.updateData();
   };
 
-  skipWorkout = async () => {
-    await api.patchReq('util/skip-workout', {}).then(() => this.updateData());
-  };
+  skipWorkout = async programWorkoutId => {
+    let { activeProgramLog, activeWorkoutLog, workoutLogs, workouts } = this.state;
+    let logIndex, workoutLog;
 
-  postponeWorkout = async () => {
-    let { nextWorkout, activeProgramLog, activeWorkoutLog } = this.state;
-    let response;
+    let workoutIndex = workouts.findIndex(
+      workout => workout.program_workout_id === programWorkoutId
+    );
+
+    if (workoutLogs) {
+      logIndex = workoutLogs.findIndex(log => log.program_workout_id === programWorkoutId);
+      workoutLog = workoutLogs[logIndex];
+    }
+
+    if (logIndex >= 0) {
+      let workoutLogId = workoutLog.workout_log_id;
+      await api
+        .updateOne('workout-logs', workoutLogId, { active: false, skipped: true })
+        .then(() => this.updateData());
+    } else {
+      let nextWorkout = workouts[workoutIndex];
+      await api
+        .addOne('workout-logs', {
+          program_log_id: activeProgramLog.program_log_id,
+          program_workout_id: nextWorkout.program_workout_id,
+          skipped: true,
+          active: false,
+        })
+        .then(() => this.updateData());
+    }
 
     if (activeWorkoutLog) {
-      let { days_postponed } = activeWorkoutLog;
-      response = await api.updateOne('workout-logs', activeProgramLog.active_workout_log, {
-        days_postponed: days_postponed + 1,
-      });
-      this.setState({ activeWorkoutLog: response });
-    } else {
-      response = await api.addOne('workout-logs', {
-        program_log_id: activeProgramLog.program_log_id,
-        program_workout_id: nextWorkout.program_workout_id,
-      });
+      await api.updateOne('workout-logs', activeWorkoutLog.workout_log_id, { active: false });
+      this.setState({ activeWorkoutLog: null });
     }
   };
 
@@ -106,7 +135,6 @@ class Dashboard extends React.Component {
 
   render() {
     let { nextWorkout, activeProgramLog, activeWorkoutLog, stats } = this.state;
-    console.log(this.state);
 
     return (
       <div className='offset-header'>
@@ -114,10 +142,9 @@ class Dashboard extends React.Component {
         {activeProgramLog ? (
           <WorkoutSticky
             activeProgramLog={activeProgramLog}
-            activeWorkout={activeWorkoutLog}
+            activeWorkoutLog={activeWorkoutLog}
             nextWorkout={nextWorkout}
             skip={this.skipWorkout}
-            postpone={this.postponeWorkout}
             history={this.props.history}
           />
         ) : null}

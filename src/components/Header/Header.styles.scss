@@ -5,6 +5,14 @@
   top: 80px;
   z-index: 999;
 
+  .back-button {
+    text-align: left;
+    background: none;
+    border-radius: none;
+    border: none;
+    min-width: 40px;
+  }
+
   .row {
     color: $primary;
     background-color: $white;
@@ -14,8 +22,18 @@
     box-shadow: $box-shadow;
 
     h1 {
+      position: absolute;
+      left: 50%;
+      top: 50%;
       font-size: 1.6rem;
+      padding: 0 18px;
+      transform: translate(-50%, -50%);
     }
+  }
+
+  .arrow {
+    height: 14px;
+    width: 14px;
   }
 }
 

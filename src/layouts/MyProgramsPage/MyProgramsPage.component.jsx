@@ -26,11 +26,10 @@ class MyProgramsPage extends React.Component {
 
   abandonCurrentProgram = async () => {
     let { activeProgramLog } = this.state;
-    let response = await api.patchReq(
-      `util/abandon-program-log/${activeProgramLog.program_log_id}`,
-      {}
-    );
-    console.log(response);
+    let { history } = this.props;
+
+    await api.updateOne('program-logs', activeProgramLog.program_log_id, { status: 'abandoned' });
+    history.push('/dashboard');
   };
 
   componentDidMount = () => {
@@ -39,7 +38,7 @@ class MyProgramsPage extends React.Component {
 
   setData = async () => {
     // Get all data for programs page
-    let programLogs = await api.get('program-logs');
+    let programLogs = await api.get('program-logs', 'orderBy=[desc]start_date');
 
     // Get index of exercise log
     let activeProgramLogIndex = programLogs.findIndex(log => log.status === 'active');
@@ -60,7 +59,7 @@ class MyProgramsPage extends React.Component {
 
     return (
       <div className='my-programs-page offset-header'>
-        <Header text='My Programs' />
+        <Header text='My Programs' history={history} />
         <main className=''>
           <div className='row'>
             <Col number='1' bgLarge='true' className='workout-list'>

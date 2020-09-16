@@ -178,6 +178,7 @@ class ExercisePage extends React.Component {
 
   render() {
     let { activeExercise, workout, workoutLog, exercises, lastExerciseLog } = this.state;
+    let { history } = this.props;
 
     let exerciseName = '',
       workoutName = '',
@@ -197,7 +198,7 @@ class ExercisePage extends React.Component {
 
     return (
       <div className='exercise-page offset-header'>
-        <Header text={`${exerciseName}`} />
+        <Header text={`${exerciseName}`} history={history} />
         <main className=''>
           <div className='row'>
             <Col number='1' bgSmall='true' className='workout-list'>

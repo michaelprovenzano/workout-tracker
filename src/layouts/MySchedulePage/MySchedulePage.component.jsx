@@ -54,21 +54,7 @@ class MySchedulePage extends React.Component {
       item => item.program_workout_id === clickedWorkout.program_workout_id
     );
 
-    if (workoutLogIndex === -1) {
-      // Get the date for workout
-      let workoutDate = programLog.workout_schedule[workoutIndex];
-
-      // Create the log
-      let response = await api.addOne('workout-logs', {
-        program_log_id: programLog.program_log_id,
-        program_workout_id: clickedWorkout.program_workout_id,
-        date: workoutDate,
-        active: false,
-      });
-
-      // Redirect
-      history.push(`/workout-logs/${response.workout_log_id}`);
-    } else {
+    if (workoutLogIndex > -1) {
       let workoutLog = workoutLogs[workoutLogIndex];
       history.push(`/workout-logs/${workoutLog.workout_log_id}`);
     }
@@ -94,7 +80,7 @@ class MySchedulePage extends React.Component {
 
     return (
       <div className='my-programs-page offset-header'>
-        <Header text='My Schedule' />
+        <Header text='My Schedule' history={history} />
         <main className=''>
           <div className='row'>
             <Col number='1' bgLarge='true' className='workout-list'>
@@ -123,11 +109,10 @@ class MySchedulePage extends React.Component {
                       workout_log_id = log.workout_log_id;
                       workoutLogs[index].skipped ? (status = 'skipped') : (status = 'complete');
                       currentWorkoutDate = moment(log.date).format('MM/DD/YYYY');
-                      console.log(log);
                     }
 
                     return (
-                      <div className='w-100 d-flex flex-column align-items-center'>
+                      <div className='w-100 d-flex flex-column align-items-center' key={i}>
                         {i % 7 === 0 ? (
                           <header className='header-secondary w-100 d-flex align-items-center text-primary'>
                             Week {(i + 7) / 7}

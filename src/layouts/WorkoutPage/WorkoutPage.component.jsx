@@ -32,7 +32,6 @@ class WorkoutPage extends React.Component {
   componentDidMount = async () => {
     let { workoutLogId } = this.props.match.params;
 
-    console.log(workoutLogId);
     let workoutLog = await api.getOne('workout-logs', workoutLogId);
     let activeProgramLog = await api.getOne('program-logs', workoutLog.program_log_id);
 
@@ -92,20 +91,30 @@ class WorkoutPage extends React.Component {
 
   onClick = async e => {
     let { history } = this.props;
-    let { exercises, exerciseLogs, workoutLog, activeProgramLog } = this.state;
+    let { exercises, exerciseLogs, workoutLog } = this.state;
     let workoutLogId = workoutLog.workout_log_id;
 
-    // TODO: If workout has no exercises, change to complete current workout
     if (exercises.length === 0) {
-      if (activeProgramLog.active_workout_log === workoutLog.workout_log_id) {
-        let response = await api.patchReq('util/complete-active-workout');
-        if (response.status === 'success') history.push(`/dashboard`);
-      } else {
-        let response = await api.updateOne('workout-logs', workoutLogId, { progress: 1 });
+      // If workout has no exercises complete current workout
+      if (workoutLog.active) {
+        let response = await api.updateOne('workout-logs', workoutLogId, {
+          active: false,
+          progress: 1,
+        });
         if (response) history.push(`/dashboard`);
+      } else {
+        await api.updateOne('workout-logs', workoutLogId, { progress: 1 });
       }
-      // TODO: If workout has exercises, go to last completed exercise log
+    } else if (exerciseLogs.length === 0) {
+      // If workout has no logs, create one and go to it
+      let response = await api.addOne('exercise-logs', {
+        workout_log_id: workoutLogId,
+        workout_exercise_id: exercises[0].workout_exercise_id,
+      });
+      if (response)
+        history.push(`/workout-logs/${workoutLog.workout_log_id}/${response.exercise_log_id}`);
     } else {
+      // If workout has exercises, go to last completed exercise log
       history.push(
         `/workout-logs/${workoutLog.workout_log_id}/${
           exerciseLogs[exerciseLogs.length - 1].exercise_log_id
@@ -114,11 +123,39 @@ class WorkoutPage extends React.Component {
     }
   };
 
+  resetProgress = async () => {
+    let { workoutLog } = this.state;
+
+    let newWorkoutLog = await api.updateOne('workout-logs', workoutLog.workout_log_id, {
+      progress: 0,
+    });
+    this.setState({ workoutLog: newWorkoutLog });
+  };
+
+  resetSkip = async () => {
+    let { workoutLog } = this.state;
+
+    let newWorkoutLog = await api.updateOne('workout-logs', workoutLog.workout_log_id, {
+      skipped: false,
+    });
+    this.setState({ workoutLog: newWorkoutLog });
+  };
+
+  skipWorkout = async () => {
+    let { history } = this.props;
+    let { workoutLogId } = this.props.match.params;
+    await api
+      .updateOne('workout-logs', workoutLogId, { active: false, skipped: true })
+      .then(response => console.log(response))
+      .then(() => history.push('/dashboard'));
+  };
+
   render() {
-    const { activeWorkoutLog, activeProgram } = this.props;
+    const { history } = this.props;
     let { workout, exercises, exerciseLogs, workoutLog, activeProgramLog } = this.state;
 
-    if (!activeWorkoutLog && activeProgram && workout) return <div>Loading...</div>;
+    if (!workoutLog || !workout) return <div>Loading...</div>;
+    console.log(workoutLog);
 
     let name = '';
     if (workout) name = workout.name;
@@ -139,21 +176,47 @@ class WorkoutPage extends React.Component {
 
     return (
       <div className='workout-page offset-header'>
-        <Header text={`${name}`} />
+        <Header text={`${name}`} history={history} />
         <main className=''>
           <div className='row'>
             <Col number='1' bgSmall='true'>
-              <div className='d-flex justify-content-between w-100 mb-20px'>
-                <Button text='Skip' type='secondary' position='left' className='flex-grow-1' />
-                <Button text='Postpone' type='secondary' position='right' className='flex-grow-1' />
+              <div className='d-flex justify-content-start mb-20px w-100'>
+                {!workoutLog.skipped ? (
+                  <Button
+                    text='Skip'
+                    type='secondary'
+                    position='left'
+                    className='w-50'
+                    onClick={this.skipWorkout}
+                  />
+                ) : (
+                  <Button
+                    text='Undo Skip'
+                    type='danger'
+                    position='center'
+                    className='w-100 mb-20px'
+                    onClick={this.resetSkip}
+                  />
+                )}
               </div>
-              <Button
-                text={buttonText}
-                type='primary'
-                position='center'
-                className='w-100 mb-20px'
-                onClick={this.onClick}
-              />
+              {workoutLog.progress === 1 ? (
+                <Button
+                  text='Reset Workout Progress'
+                  type='danger'
+                  position='center'
+                  className='w-100 mb-20px'
+                  onClick={this.resetProgress}
+                />
+              ) : null}
+              {!workoutLog.skipped && workoutLog.progress !== 1 ? (
+                <Button
+                  text={buttonText}
+                  type='primary'
+                  position='center'
+                  className='w-100 mb-20px'
+                  onClick={this.onClick}
+                />
+              ) : null}
               <div className='workout-program d-flex justify-content-between w-100'>
                 <div className='pb-2'>{name}</div>
                 <div className='pb-2'>{activeProgramLog ? activeProgramLog.name : 'null'}</div>

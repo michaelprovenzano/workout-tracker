@@ -19,29 +19,41 @@ class WorkoutSticky extends React.Component {
   }
 
   onClick = async () => {
-    let { activeProgramLog, nextWorkout, history } = this.props;
-    let workoutLogId = activeProgramLog.active_workout_log;
+    let { activeProgramLog, activeWorkoutLog, nextWorkout, history } = this.props;
+    let workoutLog = activeWorkoutLog;
+    let workoutLogId;
 
-    // Check if next workout is already started (check for active workout log property)
-    if (!workoutLogId) {
+    // Check if next workout is there is an active workout log
+    if (!activeWorkoutLog) {
       // If there's no log, create a new workout log for the current program and make it the active workout log
-      let workoutLog = await api.addOne('workout-logs', {
+      workoutLog = await api.addOne('workout-logs', {
         program_workout_id: nextWorkout.program_workout_id,
         program_log_id: activeProgramLog.program_log_id,
+        active: true,
       });
-
-      if (workoutLog) workoutLogId = workoutLog.workout_log_id;
     }
+
+    if (workoutLog) workoutLogId = workoutLog.workout_log_id;
 
     // Redirect to the workout log page
     if (workoutLogId) history.push(`/workout-logs/${workoutLogId}`);
   };
 
   render() {
-    let { nextWorkout, activeWorkout, skip, postpone } = this.props;
+    let { nextWorkout, activeWorkoutLog, skip } = this.props;
     let buttonText;
+    let workoutName = '',
+      workoutId;
 
-    activeWorkout ? (buttonText = 'Continue Workout') : (buttonText = 'Start Workout');
+    activeWorkoutLog ? (buttonText = 'Continue Workout') : (buttonText = 'Start Workout');
+    if (nextWorkout) {
+      workoutName = nextWorkout.name;
+      workoutId = nextWorkout.program_workout_id;
+    }
+    if (activeWorkoutLog) {
+      workoutName = activeWorkoutLog.name;
+      workoutId = activeWorkoutLog.program_workout_id;
+    }
 
     return (
       <div className='workout-sticky row'>
@@ -52,11 +64,11 @@ class WorkoutSticky extends React.Component {
               text='Skip'
               position='left'
               type='secondary'
-              onClick={skip}
+              onClick={() => skip(workoutId)}
             />
           </div>
-          {activeWorkout ? <small>Today's Workout</small> : <small>Next Workout</small>}
-          <h2>{activeWorkout ? activeWorkout.name : nextWorkout.name}</h2>
+          {activeWorkoutLog ? <small>Today's Workout</small> : <small>Next Workout</small>}
+          <h2>{workoutName}</h2>
           <Button text={buttonText} position='center' type='primary' onClick={this.onClick} />
         </div>
       </div>
