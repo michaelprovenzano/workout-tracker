@@ -34,6 +34,12 @@
   .password-link {
     margin-bottom: 136px;
   }
+
+  a.btn,
+  a.btn:visited {
+    text-decoration: none;
+    font-size: 1.6rem;
+  }
 }
 
 @media (max-width: $breakpoint-tablet) {

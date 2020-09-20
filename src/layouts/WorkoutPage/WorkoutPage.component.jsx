@@ -82,7 +82,9 @@ class WorkoutPage extends React.Component {
     if (logId) {
       history.push(`/workout-logs/${workoutLogId}/${logId}`);
     } else {
+      console.log({ workoutLogId, workoutExerciseId });
       let exerciseLog = await api.addOne('exercise-logs', {
+        workout_log_id: workoutLogId,
         workout_exercise_id: workoutExerciseId,
       });
       history.push(`/workout-logs/${workoutLogId}/${exerciseLog.exercise_log_id}`);

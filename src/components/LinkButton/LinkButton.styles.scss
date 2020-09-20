@@ -1,6 +1,6 @@
 @import '../../styles/variables.scss';
 
-button.btn {
+a.btn {
   display: flex;
   align-items: center;
   font-weight: bold;
@@ -8,7 +8,7 @@ button.btn {
   border-radius: 3px;
 }
 
-button.btn-primary {
+a.btn-primary {
   color: $white;
   background-color: $primary;
   justify-content: center;
@@ -17,14 +17,14 @@ button.btn-primary {
   padding: 0 38px;
 }
 
-button.btn-secondary {
+a.btn-secondary {
   color: $primary;
   background-color: transparent;
   font-size: 1.2rem;
   height: 40px;
 }
 
-button.btn-danger {
+a.btn-danger {
   color: $white;
   background-color: $danger;
   font-size: 1.6rem;
@@ -32,16 +32,16 @@ button.btn-danger {
   padding: 0 38px;
 }
 
-button.btn-right {
+a.btn-right {
   justify-content: flex-end;
   padding-right: 0;
 }
 
-button.btn-left {
+a.btn-left {
   justify-content: flex-start;
   padding-left: 0;
 }
 
-button.btn-center {
+a.btn-center {
   justify-content: center;
 }

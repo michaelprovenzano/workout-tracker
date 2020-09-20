@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import './SignupPage.styles.scss';
 
 import InputText from '../../components/InputText/InputText.component';
-import Button from '../../components/Button/Button.component';
 import SignUpButton from '../../components/SignUpButton/SignUpButton.component';
 import logo from '../../images/logo-signin.svg';
 
@@ -66,12 +65,9 @@ class SignupPage extends React.Component {
                 Forgot your password?
               </Link>
               <p>Don't have an account?</p>
-              <Button
-                text='Sign In'
-                type='primary'
-                className='w-100 sign-up'
-                email={this.state.email}
-              />
+              <Link to='/sign-in' className='btn btn-primary btn-center w-100'>
+                Sign In
+              </Link>
             </div>
           </div>
         </main>

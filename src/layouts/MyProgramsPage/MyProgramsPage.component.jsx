@@ -21,6 +21,7 @@ class MyProgramsPage extends React.Component {
     this.state = {
       programLogs: undefined,
       activeProgramLog: undefined,
+      stats: undefined,
     };
   }
 
@@ -36,15 +37,10 @@ class MyProgramsPage extends React.Component {
     this.setData();
   };
 
-  setData = async () => {
-    // Get all data for programs page
-    let programLogs = await api.get('program-logs', 'orderBy=[desc]start_date');
-
-    // Get index of exercise log
-    let activeProgramLogIndex = programLogs.findIndex(log => log.status === 'active');
-    let activeProgramLog = programLogs[activeProgramLogIndex];
-
-    this.setState({ programLogs, activeProgramLog }, () => console.log(this.state));
+  getStats = async programLogId => {
+    let stats;
+    if (programLogId) stats = await api.get(`util/program-log-stats/${programLogId}`);
+    return stats.data;
   };
 
   goToCurrentSchedule = () => {
@@ -53,8 +49,21 @@ class MyProgramsPage extends React.Component {
     history.push(`/program-logs/${activeProgramLog.program_log_id}`);
   };
 
+  setData = async () => {
+    // Get all data for programs page
+    let programLogs = await api.get('program-logs', 'orderBy=[desc]start_date');
+
+    // Get index of exercise log
+    let activeProgramLogIndex = programLogs.findIndex(log => log.status === 'active');
+    let activeProgramLog = programLogs[activeProgramLogIndex];
+
+    let stats = await this.getStats(activeProgramLog.program_log_id);
+
+    this.setState({ programLogs, activeProgramLog, stats }, () => console.log(this.state));
+  };
+
   render() {
-    let { activeProgramLog, programLogs } = this.state;
+    let { activeProgramLog, programLogs, stats } = this.state;
     let { history } = this.props;
 
     return (
@@ -67,7 +76,7 @@ class MyProgramsPage extends React.Component {
                 <div className='bold'>{activeProgramLog ? activeProgramLog.name : null}</div>
                 <small>Current Program</small>
               </div>
-              <ProgressBar progress={`25`} />
+              <ProgressBar progress={stats ? stats.progress * 100 : 0} />
               <div className='row w-100 btn-group'>
                 <div className='col-4 col-md-12'>
                   <Button

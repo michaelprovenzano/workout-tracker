@@ -52,7 +52,6 @@ class ProgramsPage extends React.Component {
 
   render() {
     let { programs, selected } = this.state;
-    let { history } = this.props;
 
     return (
       <div className='programs-page offset-header'>

@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { setCurrentUser } from '../../redux/user/user.actions';
+import { setJwtCookie } from '../../utils/cookieController';
+import api from '../../utils/apiCalls';
 import './SignUpButton.styles.scss';
 
 class SignUpButton extends React.Component {
@@ -14,7 +16,7 @@ class SignUpButton extends React.Component {
   signUp = (email, password, passwordConfirm) => {
     if (password !== passwordConfirm) return;
 
-    fetch('http://localhost:8000/api/user', {
+    fetch('http://localhost:8000/api/register', {
       method: 'POST',
       mode: 'cors',
       headers: {
@@ -27,7 +29,11 @@ class SignUpButton extends React.Component {
     })
       .then(response => response.json())
       // Set the global user token below
-      .then(data => this.props.setCurrentUser(data))
+      .then(data => {
+        setJwtCookie(data.token);
+        data.token = null;
+        this.props.setCurrentUser(data);
+      })
       .then(() => {
         this.props.history.push('/dashboard');
       })

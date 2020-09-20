@@ -44,6 +44,7 @@ class ExercisePage extends React.Component {
       .then(response => this.setState({ exerciseLog: null }, () => this.setState(response)))
       .then(response => {
         let { exerciseLog, workoutLog } = this.state;
+        console.log(this.state);
 
         // Set the url
         if (exerciseLog && workoutLog)
@@ -76,6 +77,7 @@ class ExercisePage extends React.Component {
     if (nextExerciseLog.length === 0) {
       // Create a new log
       nextExerciseLog = await api.addOne('exercise-logs', {
+        workout_log_id: workoutLog.workout_log_id,
         workout_exercise_id: workoutExerciseId,
       });
       workoutLog.exercise_logs.push(nextExerciseLog);

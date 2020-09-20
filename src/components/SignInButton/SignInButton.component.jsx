@@ -26,16 +26,25 @@ class SignInButton extends React.Component {
       .then(response => response.json())
       // Set the global user below
       .then(data => {
-        // Put the token in a cookie
-        setJwtCookie(data.token);
+        if (data.status === 'success') {
+          // Put the token in a cookie
+          setJwtCookie(data.token);
 
-        // Add the user to the state
-        this.props.setCurrentUser(data);
+          // Restrict the data put into state
+          let userData = {
+            id: data.id,
+            email: data.email,
+          };
+
+          // Add the user to the state
+          this.props.setCurrentUser(userData);
+
+          this.props.history.push('/dashboard');
+        } else {
+          console.log(data);
+        }
       })
-      .then(() => {
-        this.props.history.push('/dashboard');
-      })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err.data));
   };
 
   render() {

@@ -22,6 +22,7 @@ class MySchedulePage extends React.Component {
       programLog: undefined,
       workoutLogs: undefined,
       workouts: undefined,
+      stats: undefined,
     };
   }
 
@@ -29,21 +30,28 @@ class MySchedulePage extends React.Component {
     this.setData();
   };
 
+  getStats = async programLogId => {
+    let stats;
+    if (programLogId) stats = await api.get(`util/program-log-stats/${programLogId}`);
+    return stats.data;
+  };
+
   setData = async () => {
     let { programLogId } = this.props.match.params;
-    let workoutLogs, workouts;
+    let workoutLogs, workouts, stats;
 
     let programLog = await api.getOne('program-logs', programLogId);
     if (programLog) {
       workoutLogs = await api.get('workout-logs', `program_log_id=${programLog.program_log_id}`);
       workouts = await api.get('program-workouts', `program_id=${programLog.program_id}`);
+      stats = await this.getStats(programLogId);
     }
 
-    this.setState({ programLog, workoutLogs, workouts }, () => console.log(this.state));
+    this.setState({ programLog, workoutLogs, workouts, stats }, () => console.log(this.state));
   };
 
   goToWorkoutLog = async e => {
-    let { workouts, workoutLogs, programLog } = this.state;
+    let { workouts, workoutLogs } = this.state;
     let { history } = this.props;
 
     let workoutIndex = parseInt(e.target.closest('button').id);
@@ -61,7 +69,7 @@ class MySchedulePage extends React.Component {
   };
 
   render() {
-    let { programLog, workoutLogs, workouts } = this.state;
+    let { programLog, workoutLogs, workouts, stats } = this.state;
     let { history } = this.props;
 
     let currentWorkoutDate;
@@ -90,7 +98,7 @@ class MySchedulePage extends React.Component {
                   {programLog.status === 'active' ? <small>Current Program</small> : null}
                 </div>
               ) : null}
-              <ProgressBar progress={`25`} />
+              <ProgressBar progress={stats ? stats.progress * 100 : 0} />
             </Col>
             <Col number='2'>
               {workouts

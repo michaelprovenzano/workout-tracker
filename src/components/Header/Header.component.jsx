@@ -13,12 +13,12 @@ const Header = props => {
     <header className='header'>
       <div className='row header align-items-center'>
         <div className='col-lg-8 offset-lg-2 text-left'>
+          <h1 className='text-center w-100'>{text}</h1>
           {history ? (
             <button className='back-button' onClick={goBack}>
               <Arrow direction='left' />
             </button>
           ) : null}
-          <h1 className='text-center w-100'>{text}</h1>
         </div>
       </div>
     </header>

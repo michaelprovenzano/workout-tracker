@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import './Navigation.styles.scss';
-import Button from '../Button/Button.component';
+import LogOutButton from '../LogOutButton/LogOutButton.component';
 import logo from '../../images/trackbody-logo.svg';
 import MenuIcon from '../../components/MenuIcon/MenuIcon.component';
 
@@ -27,7 +27,10 @@ class Navigation extends React.Component {
 
   render() {
     let show = '';
-    let { currentUser } = this.props.user;
+    let currentUser = this.props.user;
+    let isLoggedIn;
+    currentUser.id ? (isLoggedIn = true) : (isLoggedIn = false);
+
     if (this.state.expanded) show = 'show';
 
     return (
@@ -42,33 +45,42 @@ class Navigation extends React.Component {
           <div className='nav-toggle-header'>
             <h2 className='nav-toggle-text'>Menu</h2>
           </div>
-          <ul>
-            <li>
-              <NavLink to='/dashboard' onClick={this.collapseMenu}>
-                Dashboard
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/my-programs' onClick={this.collapseMenu}>
-                My Programs
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to='/settings' onClick={this.collapseMenu}>
-                Settings
-              </NavLink>
-            </li>
-            <li className='pin-to-bottom'>
-              {currentUser ? (
-                <Button
-                  text='Log Out'
+          {isLoggedIn ? (
+            <ul>
+              <li>
+                <NavLink to='/dashboard' onClick={this.collapseMenu}>
+                  Dashboard
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to='/my-programs' onClick={this.collapseMenu}>
+                  My Programs
+                </NavLink>
+              </li>
+              {/* <li>
+                <NavLink to='/settings' onClick={this.collapseMenu}>
+                  Settings
+                </NavLink>
+              </li> */}
+              <li className='pin-to-bottom'>
+                <LogOutButton
                   position='center'
                   type='primary'
-                  onClick={this.collapseMenu}
+                  text={isLoggedIn ? 'Log Out' : 'Sign In'}
                 />
-              ) : null}
-            </li>
-          </ul>
+              </li>
+            </ul>
+          ) : (
+            <ul>
+              <li className='pin-to-bottom'>
+                <LogOutButton
+                  position='center'
+                  type='primary'
+                  text={isLoggedIn ? 'Log Out' : 'Sign In'}
+                />
+              </li>
+            </ul>
+          )}
         </nav>
       </div>
     );

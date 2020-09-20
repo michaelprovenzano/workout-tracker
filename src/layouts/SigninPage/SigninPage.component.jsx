@@ -56,7 +56,9 @@ class SigninPage extends React.Component {
                 Forgot your password?
               </Link>
               <p>Don't have an account?</p>
-              <Button text='Sign Up' type='primary' className='w-100 sign-up' />
+              <Link to='/sign-up' className='btn btn-primary btn-center w-100'>
+                Sign Up
+              </Link>
             </div>
           </div>
         </main>

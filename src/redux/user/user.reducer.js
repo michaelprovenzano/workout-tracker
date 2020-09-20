@@ -7,6 +7,8 @@ const userReducer = (state = INITIAL_STATE, action) => {
         ...state,
         ...action.payload,
       };
+    case 'REMOVE_CURRENT_USER':
+      return INITIAL_STATE;
     default:
       return state;
   }
