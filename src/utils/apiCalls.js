@@ -1,6 +1,12 @@
 import { setAuthHeader } from './cookieController';
 
-const baseUrl = 'http://localhost:8000/api';
+// Production URL
+let baseUrl = 'https://dry-peak-42594.herokuapp.com/api';
+
+if (process.env.NODE_ENV === 'development') {
+  // Local URL
+  baseUrl = 'http://localhost:8000/api';
+}
 
 let requestConstructor = {
   get: async (reqUrl, returnValue) => {
@@ -66,6 +72,9 @@ let api = {
   },
   patchReq: async (url, body) => {
     return await requestConstructor.patch(`${baseUrl}/${url}`, body);
+  },
+  post: async (url, body) => {
+    return await requestConstructor.post(`${baseUrl}/${url}`, body);
   },
 };
 

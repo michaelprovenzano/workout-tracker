@@ -29,7 +29,7 @@ class Navigation extends React.Component {
     let show = '';
     let currentUser = this.props.user;
     let isLoggedIn;
-    currentUser.id ? (isLoggedIn = true) : (isLoggedIn = false);
+    currentUser.user_id ? (isLoggedIn = true) : (isLoggedIn = false);
 
     if (this.state.expanded) show = 'show';
 

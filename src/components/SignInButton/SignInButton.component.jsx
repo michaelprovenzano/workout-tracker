@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { setCurrentUser } from '../../redux/user/user.actions';
 import { setJwtCookie } from '../../utils/cookieController';
 import './SignInButton.styles.scss';
+import api from '../../utils/apiCalls';
 
 class SignInButton extends React.Component {
   constructor(props) {
@@ -13,26 +14,21 @@ class SignInButton extends React.Component {
   }
 
   signIn = (email, password) => {
-    fetch('http://localhost:8000/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    api
+      .post('login', {
         email: email,
         password: password,
-      }),
-    })
-      .then(response => response.json())
+      })
       // Set the global user below
       .then(data => {
+        console.log('signing in');
         if (data.status === 'success') {
           // Put the token in a cookie
           setJwtCookie(data.token);
 
           // Restrict the data put into state
           let userData = {
-            id: data.id,
+            user_id: data.user_id,
             email: data.email,
           };
 

@@ -115,7 +115,7 @@ class MySchedulePage extends React.Component {
                       let log = workoutLogHash[workout.program_workout_id];
                       let index = log.index;
                       workout_log_id = log.workout_log_id;
-                      workoutLogs[index].skipped ? (status = 'skipped') : (status = 'complete');
+                      workoutLogs[index].skipped ? (status = 'skipped') : (status = 'completed');
                       currentWorkoutDate = moment(log.date).format('MM/DD/YYYY');
                     }
 
@@ -131,7 +131,7 @@ class MySchedulePage extends React.Component {
                           id={i}
                           name={workout.name}
                           date={currentWorkoutDate}
-                          complete={status === 'complete'}
+                          completed={status === 'completed'}
                           skipped={status === 'skipped'}
                           history={history}
                           url={`/workout-logs/${workout_log_id}`}

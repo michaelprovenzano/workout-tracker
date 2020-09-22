@@ -18,13 +18,20 @@ class WorkoutSticky extends React.Component {
     };
   }
 
+  getStats = async programLogId => {
+    let stats;
+    if (programLogId) stats = await api.get(`util/program-log-stats/${programLogId}`);
+    return stats.data;
+  };
+
   onClick = async () => {
     let { activeProgramLog, activeWorkoutLog, nextWorkout, history } = this.props;
+    let activeProgramLogId = activeProgramLog.program_log_id;
     let workoutLog = activeWorkoutLog;
     let workoutLogId;
 
     // Check if next workout is there is an active workout log
-    if (!activeWorkoutLog) {
+    if (!activeWorkoutLog && nextWorkout) {
       // If there's no log, create a new workout log for the current program and make it the active workout log
       workoutLog = await api.addOne('workout-logs', {
         program_workout_id: nextWorkout.program_workout_id,
@@ -34,6 +41,11 @@ class WorkoutSticky extends React.Component {
     }
 
     if (workoutLog) workoutLogId = workoutLog.workout_log_id;
+
+    // Get the stats to check workout progress
+    let stats = await this.getStats(activeProgramLogId);
+    if (stats.progress === 1)
+      await api.updateOne('program-logs', activeProgramLogId, { status: 'completed' });
 
     // Redirect to the workout log page
     if (workoutLogId) history.push(`/workout-logs/${workoutLogId}`);

@@ -16,18 +16,11 @@ class SignUpButton extends React.Component {
   signUp = (email, password, passwordConfirm) => {
     if (password !== passwordConfirm) return;
 
-    fetch('http://localhost:8000/api/register', {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    api
+      .post('register', {
         email: email,
         password: password,
-      }),
-    })
-      .then(response => response.json())
+      })
       // Set the global user token below
       .then(data => {
         setJwtCookie(data.token);

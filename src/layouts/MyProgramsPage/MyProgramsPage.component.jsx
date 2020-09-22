@@ -57,7 +57,8 @@ class MyProgramsPage extends React.Component {
     let activeProgramLogIndex = programLogs.findIndex(log => log.status === 'active');
     let activeProgramLog = programLogs[activeProgramLogIndex];
 
-    let stats = await this.getStats(activeProgramLog.program_log_id);
+    let stats;
+    if (activeProgramLog) await this.getStats(activeProgramLog.program_log_id);
 
     this.setState({ programLogs, activeProgramLog, stats }, () => console.log(this.state));
   };
@@ -113,6 +114,7 @@ class MyProgramsPage extends React.Component {
                     ).format('MM/DD/YYYY');
 
                     let abandoned = log.status === 'abandoned';
+                    let completed = log.status === 'completed';
 
                     return (
                       <ProgramItem
@@ -122,6 +124,7 @@ class MyProgramsPage extends React.Component {
                         history={history}
                         url={`/program-logs/${log.program_log_id}`}
                         abandoned={abandoned}
+                        completed={completed}
                         program
                       />
                     );

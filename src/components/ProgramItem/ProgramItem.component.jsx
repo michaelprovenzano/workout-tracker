@@ -20,7 +20,7 @@ class ProgramItem extends React.Component {
   render() {
     let {
       name,
-      complete,
+      completed,
       skipped,
       abandoned,
       abandonedAfter,
@@ -45,7 +45,7 @@ class ProgramItem extends React.Component {
       <button
         id={id}
         className={`program-item outline-none ${abandoned ? 'abandoned' : ''} ${
-          complete ? 'complete' : ''
+          completed ? 'completed' : ''
         } ${skipped ? 'skipped' : ''} ${classes ? classes : ''}`}
         onClick={onClick ? onClick : this.onClick}
       >
@@ -59,19 +59,19 @@ class ProgramItem extends React.Component {
             </div>
             <div className='d-flex align-items-center status'>
               <div className='status-icon'>
-                {complete ? <div className='checkmark'></div> : null}
+                {completed ? <div className='checkmark'></div> : null}
               </div>
               <span
-                className={`pl-2 ${complete ? 'text-primary' : ''} ${
+                className={`pl-2 ${completed ? 'text-primary' : ''} ${
                   abandoned ? 'text-danger' : ''
                 }`}
               >
-                {complete && program ? `Completed in ${days} days` : ''}
+                {completed && program ? `Completed in ${days} days` : ''}
                 {abandoned && program ? `Abandoned after ${abandonedAfter} days` : ''}
-                {!complete && !abandoned && program ? 'In progress' : ''}
-                {complete && workout ? `Completed` : ''}
+                {!completed && !abandoned && program ? 'In progress' : ''}
+                {completed && workout ? `Completed` : ''}
                 {skipped && workout ? `Skipped` : ''}
-                {!complete && !skipped && workout ? 'Incomplete' : ''}
+                {!completed && !skipped && workout ? 'Incomplete' : ''}
               </span>
             </div>
           </div>
