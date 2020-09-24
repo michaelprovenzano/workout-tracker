@@ -21,7 +21,6 @@ class Navigation extends React.Component {
   };
 
   collapseMenu = e => {
-    this.menuClick();
     this.setState({ expanded: false });
   };
 
