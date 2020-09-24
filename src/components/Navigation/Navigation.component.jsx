@@ -16,18 +16,19 @@ class Navigation extends React.Component {
   }
 
   menuClick = e => {
-    e.preventDefault();
     let isExpanded = this.state.expanded;
     this.setState({ expanded: !isExpanded });
   };
 
   collapseMenu = e => {
+    this.menuClick();
     this.setState({ expanded: false });
   };
 
   render() {
     let show = '';
     let currentUser = this.props.user;
+    let expanded = this.state.expanded;
     let isLoggedIn;
     currentUser.user_id ? (isLoggedIn = true) : (isLoggedIn = false);
 
@@ -39,7 +40,7 @@ class Navigation extends React.Component {
           <img src={logo} alt='trackbody logo' />
         </Link>
         <div className='nav-toggle-btn' onClick={this.menuClick}>
-          <MenuIcon />
+          <MenuIcon active={expanded} />
         </div>
         <nav className={show}>
           <div className='nav-toggle-header'>

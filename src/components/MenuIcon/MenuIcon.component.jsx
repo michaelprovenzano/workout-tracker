@@ -4,19 +4,15 @@ import './MenuIcon.styles.scss';
 class MenuIcon extends React.Component {
   constructor(props) {
     super();
-    this.state = { active: false };
   }
 
-  toggleActive = () => {
-    this.setState({ active: !this.state.active });
-  };
-
   render() {
-    let { classes } = this.props;
+    let { className, active, onClick } = this.props;
+
     return (
       <div
-        className={`menu-icon ${this.state.active ? 'active' : ''} ${classes ? classes : ''}`}
-        onClick={this.toggleActive}
+        className={`menu-icon ${active ? 'active' : ''} ${className ? className : ''}`}
+        onClick={onClick}
       >
         <span className='line-1'></span>
         <span className='line-2'></span>
