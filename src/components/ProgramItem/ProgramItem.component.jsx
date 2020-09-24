@@ -51,8 +51,8 @@ class ProgramItem extends React.Component {
       >
         <div className='d-flex justify-content-between'>
           <div className='d-flex flex-column justify-content-center align-items-start'>
-            <div className='name mb-1'>{name}</div>
-            <div className='date-range mb-1'>
+            <div className='name mb-2'>{name}</div>
+            <div className='date-range mb-2'>
               <span className='bold'>{day ? `${day} | ` : ''}</span>
               {dateRange ? dateRange : ''}
               {date ? date : ''}

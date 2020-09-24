@@ -16,7 +16,7 @@
   button {
     color: $primary;
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1.6rem;
     border: none;
     background-color: transparent;
   }
@@ -33,6 +33,6 @@
 
 @media (max-width: $breakpoint-tablet) {
   .prev-next > * {
-    padding: 16px;
+    padding: 0 16px;
   }
 }

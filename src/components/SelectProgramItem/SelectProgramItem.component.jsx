@@ -14,9 +14,9 @@ class SelectProgramItem extends React.Component {
 
     return (
       <button
-        className={`program-item outline-none d-flex align-items-center ${active ? 'active' : ''} ${
-          className ? className : ''
-        }`}
+        className={`select-program-item outline-none d-flex align-items-center ${
+          active ? 'active' : ''
+        } ${className ? className : ''}`}
         id={id}
         onClick={onClick}
       >

@@ -1,7 +1,7 @@
 @import '../../styles/variables.scss';
 
 .exercise-form {
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 
   section {
     margin-bottom: 35px;
@@ -12,6 +12,7 @@
     text-align: center;
     border: 1px solid $black;
     border-radius: 3px;
+    font-size: 1.6rem;
 
     &:focus {
       border: 2px solid $primary;

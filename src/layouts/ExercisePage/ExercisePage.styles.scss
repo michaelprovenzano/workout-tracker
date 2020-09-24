@@ -1,15 +1,10 @@
 @import '../../styles/variables.scss';
 
 .exercise-page {
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 
   main {
     padding-bottom: 56px;
-  }
-
-  .col-component {
-    // height: calc(100vh - 132px);
-    // overflow-y: auto;
   }
 
   .progress-bar {
@@ -17,7 +12,7 @@
   }
 
   .workout-program {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: bold;
   }
 
