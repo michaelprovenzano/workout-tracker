@@ -55,14 +55,19 @@ class ExercisePage extends React.Component {
       .catch(err => console.log(err));
   };
 
-  getLastExerciseLog = async workoutExerciseId => {
+  getLastExerciseLog = async (workoutExerciseId, exerciseLogId) => {
     let pastExerciseLogs = await api.get(
       'exercise-logs',
       `workout_exercise_id=${workoutExerciseId}&orderBy=[desc]date`
     );
-    if (pastExerciseLogs.length >= 2) return pastExerciseLogs[1];
+    console.log(pastExerciseLogs);
+    console.log(pastExerciseLogs[0].exercise_log_id);
+    console.log(exerciseLogId);
+    console.log(pastExerciseLogs[0].exercise_log_id === parseInt(exerciseLogId));
 
-    return {};
+    if (pastExerciseLogs.length < 2) return {};
+    if (pastExerciseLogs[0].exercise_log_id === parseInt(exerciseLogId)) return pastExerciseLogs[1];
+    return pastExerciseLogs[0];
   };
 
   getExerciseLog = async workoutExerciseId => {
@@ -99,7 +104,10 @@ class ExercisePage extends React.Component {
       let nextExerciseLog = await this.getExerciseLog(nextExerciseId);
 
       // Get previous exercise log for exercise
-      let lastExerciseLog = await this.getLastExerciseLog(nextExerciseId);
+      let lastExerciseLog = await this.getLastExerciseLog(
+        nextExerciseId,
+        nextExerciseLog.exercise_log_id
+      );
 
       return {
         activeExercise: nextExerciseIndex,
@@ -131,7 +139,10 @@ class ExercisePage extends React.Component {
     let workoutLog = await api.getOne('workout-logs', workoutLogId);
     let workout = await api.getOne('workouts', workoutLog.workout_id);
     let exerciseLog = await api.getOne('exercise-logs', exerciseLogId);
-    let lastExerciseLog = await this.getLastExerciseLog(exerciseLog.workout_exercise_id);
+    let lastExerciseLog = await this.getLastExerciseLog(
+      exerciseLog.workout_exercise_id,
+      exerciseLogId
+    );
     let allExerciseLogs = await api.get('exercise-logs', `workout_log_id=${workoutLogId}`);
     let exercises = await api.get(
       'workout-exercises',
