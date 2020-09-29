@@ -17,11 +17,21 @@ class Navigation extends React.Component {
 
   menuClick = e => {
     let isExpanded = this.state.expanded;
+
+    this.lockScroll(!isExpanded);
+
     this.setState({ expanded: !isExpanded });
   };
 
   collapseMenu = e => {
+    this.lockScroll(false);
+
     this.setState({ expanded: false });
+  };
+
+  lockScroll = expanded => {
+    let body = document.getElementsByTagName('BODY')[0];
+    expanded ? body.classList.add('body-lock') : body.classList.remove('body-lock');
   };
 
   render() {
@@ -67,6 +77,7 @@ class Navigation extends React.Component {
                   position='center'
                   type='primary'
                   text={isLoggedIn ? 'Log Out' : 'Sign In'}
+                  collapseMenu={this.collapseMenu}
                 />
               </li>
             </ul>
@@ -77,6 +88,7 @@ class Navigation extends React.Component {
                   position='center'
                   type='primary'
                   text={isLoggedIn ? 'Log Out' : 'Sign In'}
+                  collapseMenu={this.collapseMenu}
                 />
               </li>
             </ul>

@@ -25,12 +25,15 @@ class LogOutButton extends React.Component {
   };
 
   render() {
-    let { position, type, className, text } = this.props;
+    let { position, type, className, text, collapseMenu } = this.props;
 
     return (
       <button
         className={`btn btn-${type} btn-${position} ${className ? className : ''}`}
-        onClick={this.logOut}
+        onClick={() => {
+          this.logOut();
+          collapseMenu();
+        }}
       >
         {text}
       </button>

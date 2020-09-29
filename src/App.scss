@@ -46,7 +46,11 @@ input {
   padding-top: 46px;
 }
 
+/*
+
 // ALIGNMENT
+
+*/
 
 .content {
   padding-left: 20px;
@@ -89,7 +93,12 @@ input {
   outline: none;
 }
 
+/*
+
 // Typography & Color
+
+*/
+
 .bold {
   font-weight: bold;
 }
@@ -112,6 +121,18 @@ input {
 
 .text-16 {
   font-size: 1.6rem;
+}
+
+/*
+
+// Utility
+
+*/
+
+.body-lock {
+  position: fixed;
+  overflow: hidden;
+  height: 100vh;
 }
 
 @media (max-width: $breakpoint-tablet) {
