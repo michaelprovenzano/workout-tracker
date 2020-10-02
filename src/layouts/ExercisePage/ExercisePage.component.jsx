@@ -60,6 +60,7 @@ class ExercisePage extends React.Component {
       'exercise-logs',
       `workout_exercise_id=${workoutExerciseId}&orderBy=[desc]date`
     );
+    console.log(pastExerciseLogs);
 
     if (pastExerciseLogs.length < 2) return {};
     if (pastExerciseLogs[0].exercise_log_id === parseInt(exerciseLogId)) return pastExerciseLogs[1];

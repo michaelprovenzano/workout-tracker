@@ -30,8 +30,15 @@ class Navigation extends React.Component {
   };
 
   lockScroll = expanded => {
+    // let scrollY;
     let body = document.getElementsByTagName('BODY')[0];
-    expanded ? body.classList.add('body-lock') : body.classList.remove('body-lock');
+
+    if (expanded) {
+      // scrollY = window.scrollY;
+      body.classList.add('body-lock');
+    } else {
+      body.classList.remove('body-lock');
+    }
   };
 
   render() {
