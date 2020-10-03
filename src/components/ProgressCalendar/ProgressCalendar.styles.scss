@@ -11,6 +11,12 @@
   .calendar-day-container {
     width: 14%;
     padding: 5px;
+
+    &:nth-child(7n + 8) {
+      .streak::before {
+        display: none;
+      }
+    }
   }
 
   .calendar-day {
