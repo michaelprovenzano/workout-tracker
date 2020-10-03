@@ -162,8 +162,9 @@ class WorkoutPage extends React.Component {
     let name = '';
     if (workout) name = workout.name;
 
-    let buttonText = 'Start';
+    let buttonText = 'Mark Complete';
     if (exerciseLogs.length > 0) buttonText = 'Continue';
+    if (exercises.length > 0) buttonText = 'Start';
 
     // Hash workout logs
     let exerciseLogHash = {};
@@ -225,26 +226,35 @@ class WorkoutPage extends React.Component {
               </div>
               {workoutLog ? <ProgressBar progress={workoutLog.progress * 100} /> : null}
             </Col>
-            <Col number='2' bgLarge='true'>
-              {exercises.map((exerciseObj, i) => {
-                let logId;
+            {exercises.length > 0 ? (
+              <Col number='2' bgLarge='true'>
+                {exercises.map((exerciseObj, i) => {
+                  let logId;
 
-                let { exercise, is_isometric, has_weight, workout_exercise_id } = exerciseObj;
-                let hasLog = exerciseLogHash[exerciseObj.workout_exercise_id];
-                if (hasLog) logId = hasLog.exercise_log_id;
+                  let { exercise, is_isometric, has_weight, workout_exercise_id } = exerciseObj;
+                  let hasLog = exerciseLogHash[exerciseObj.workout_exercise_id];
+                  if (hasLog) logId = hasLog.exercise_log_id;
 
-                return (
-                  <ExerciseItem
-                    name={`${exercise}`}
-                    weights={`${has_weight}`}
-                    isometric={`${is_isometric}`}
-                    key={i}
-                    onClick={() => this.goToExerciseLog(logId, workout_exercise_id)}
-                    complete={hasLog}
-                  />
-                );
-              })}
-            </Col>
+                  return (
+                    <ExerciseItem
+                      name={`${exercise}`}
+                      weights={`${has_weight}`}
+                      isometric={`${is_isometric}`}
+                      key={i}
+                      onClick={() => this.goToExerciseLog(logId, workout_exercise_id)}
+                      complete={hasLog}
+                    />
+                  );
+                })}
+              </Col>
+            ) : (
+              <Col number='2' bgLarge='true'>
+                <p className='text-primary'>
+                  Nothing specific to track here! Just sweat it out and when you're finished mark it
+                  complete!
+                </p>
+              </Col>
+            )}
           </div>
         </main>
       </div>
