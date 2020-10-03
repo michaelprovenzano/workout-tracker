@@ -12,7 +12,7 @@ const ProgressCalendar = props => {
             <div
               className={`calendar-day ${item.skipped ? 'skipped' : ''} ${
                 item.complete && !item.skipped ? 'complete' : ''
-              }`}
+              } ${item.streak ? 'streak' : ''}`}
             >
               <div className='calendar-day-text text-16'>{i + 1}</div>
             </div>
