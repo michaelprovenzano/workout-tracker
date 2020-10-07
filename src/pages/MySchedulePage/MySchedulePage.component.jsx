@@ -11,7 +11,7 @@ import { setActiveExerciseLog } from '../../redux/activeExerciseLog/activeExerci
 import Header from '../../components/Header/Header.component';
 import ProgramItem from '../../components/ProgramItem/ProgramItem.component';
 import ProgressBar from '../../components/ProgressBar/ProgressBar.component';
-import Col from '../Col/Col.component';
+import Col from '../../components/Col/Col.component';
 
 class MySchedulePage extends React.Component {
   constructor(props) {

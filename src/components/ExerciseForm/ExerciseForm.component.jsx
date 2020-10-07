@@ -113,7 +113,8 @@ class ExerciseForm extends React.Component {
                 </div>
                 <div className='col-4 p-0 d-flex align-items-center'>
                   <input
-                    type='text'
+                    type='number'
+                    pattern='[0-9]*'
                     name='current-reps'
                     id='current-reps'
                     className='w-100'

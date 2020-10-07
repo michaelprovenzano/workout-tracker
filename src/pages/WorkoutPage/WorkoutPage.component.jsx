@@ -13,7 +13,7 @@ import Button from '../../components/Button/Button.component';
 import ExerciseItem from '../../components/ExerciseItem/ExerciseItem.component';
 import ProgressBar from '../../components/ProgressBar/ProgressBar.component';
 
-import Col from '../Col/Col.component';
+import Col from '../../components/Col/Col.component';
 
 class WorkoutPage extends React.Component {
   constructor(props) {

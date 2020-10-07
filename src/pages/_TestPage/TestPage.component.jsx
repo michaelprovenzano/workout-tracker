@@ -1,5 +1,5 @@
 import React from 'react';
-import './Test.styles.scss';
+import './TestPage.styles.scss';
 
 import TestChild from '../../components/TestChild/TestChild.component';
 

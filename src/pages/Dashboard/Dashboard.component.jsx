@@ -13,7 +13,7 @@ import ProgressCalendar from '../../components/ProgressCalendar/ProgressCalendar
 import StatRing from '../../components/StatRing/StatRing.component';
 import WorkoutSticky from '../../components/WorkoutSticky/WorkoutSticky.component';
 
-import Col from '../Col/Col.component';
+import Col from '../../components/Col/Col.component';
 import Button from '../../components/Button/Button.component';
 
 class Dashboard extends React.Component {

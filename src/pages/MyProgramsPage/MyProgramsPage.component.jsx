@@ -11,7 +11,7 @@ import Header from '../../components/Header/Header.component';
 import ProgramItem from '../../components/ProgramItem/ProgramItem.component';
 import Button from '../../components/Button/Button.component';
 import ProgressBar from '../../components/ProgressBar/ProgressBar.component';
-import Col from '../Col/Col.component';
+import Col from '../../components/Col/Col.component';
 
 class MyProgramsPage extends React.Component {
   constructor(props) {

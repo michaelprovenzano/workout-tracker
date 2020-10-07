@@ -11,7 +11,7 @@ import ExerciseItem from '../../components/ExerciseItem/ExerciseItem.component';
 import ProgressBar from '../../components/ProgressBar/ProgressBar.component';
 import ExerciseForm from '../../components/ExerciseForm/ExerciseForm.component';
 import PrevNext from '../../components/PrevNext/PrevNext.component';
-import Col from '../Col/Col.component';
+import Col from '../../components/Col/Col.component';
 
 class ExercisePage extends React.Component {
   constructor(props) {
@@ -60,7 +60,6 @@ class ExercisePage extends React.Component {
       'exercise-logs',
       `workout_exercise_id=${workoutExerciseId}&orderBy=[desc]date`
     );
-    console.log(pastExerciseLogs);
 
     if (pastExerciseLogs.length < 2) return {};
     if (pastExerciseLogs[0].exercise_log_id === parseInt(exerciseLogId)) return pastExerciseLogs[1];

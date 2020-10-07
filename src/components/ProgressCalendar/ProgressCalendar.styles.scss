@@ -17,6 +17,10 @@
         display: none;
       }
     }
+
+    &:nth-child(28n + 28) {
+      margin-bottom: 50px;
+    }
   }
 
   .calendar-day {

@@ -6,16 +6,16 @@ import './App.scss';
 import Navigation from './components/Navigation/Navigation.component';
 
 // Pages
-import Dashboard from './layouts/Dashboard/Dashboard.component';
-import WorkoutPage from './layouts/WorkoutPage/WorkoutPage.component';
-import ExercisePage from './layouts/ExercisePage/ExercisePage.component';
-import SignupPage from './layouts/SignupPage/SignupPage.component';
-import SigninPage from './layouts/SigninPage/SigninPage.component';
-import MyProgramsPage from './layouts/MyProgramsPage/MyProgramsPage.component';
-import ProgramsPage from './layouts/ProgramsPage/ProgramsPage.component';
-import MySchedulePage from './layouts/MySchedulePage/MySchedulePage.component';
+import Dashboard from './pages/Dashboard/Dashboard.component';
+import WorkoutPage from './pages/WorkoutPage/WorkoutPage.component';
+import ExercisePage from './pages/ExercisePage/ExercisePage.component';
+import SignupPage from './pages/SignupPage/SignupPage.component';
+import SigninPage from './pages/SigninPage/SigninPage.component';
+import MyProgramsPage from './pages/MyProgramsPage/MyProgramsPage.component';
+import ProgramsPage from './pages/ProgramsPage/ProgramsPage.component';
+import MySchedulePage from './pages/MySchedulePage/MySchedulePage.component';
 
-import TestPage from './layouts/test/Test.component';
+import TestPage from './pages/_TestPage/TestPage.component';
 
 function App() {
   return (
