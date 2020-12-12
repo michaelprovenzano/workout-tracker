@@ -1,8 +1,8 @@
 const INITIAL_STATE = {};
 
-const activeWorkoutReducer = (state = INITIAL_STATE, action) => {
+const statsReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case 'SET_ACTIVE_WORKOUT':
+    case 'SET_STATS':
       return {
         ...state,
         ...action.payload,
@@ -12,4 +12,4 @@ const activeWorkoutReducer = (state = INITIAL_STATE, action) => {
   }
 };
 
-export default activeWorkoutReducer;
+export default statsReducer;

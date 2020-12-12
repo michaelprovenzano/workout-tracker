@@ -31,35 +31,37 @@ class SignupPage extends React.Component {
               <div className='logo d-flex justify-content-center flex-column'>
                 <img src={logo} alt='logo' />
               </div>
-              <InputText
-                name='email'
-                type='text'
-                label='Email'
-                className='w-100'
-                onInput={e => this.setField(e, 'email')}
-              />
-              <InputText
-                name='password'
-                type='password'
-                label='Password'
-                className='w-100'
-                onInput={e => this.setField(e, 'password')}
-              />
-              <InputText
-                name='password-confirm'
-                type='password'
-                label='Confirm Password'
-                className='w-100'
-                onInput={e => this.setField(e, 'passwordConfirm')}
-              />
-              <SignUpButton
-                text='Sign Up'
-                type='primary'
-                className='w-100 sign-in'
-                email={email}
-                password={password}
-                passwordConfirm={passwordConfirm}
-              />
+              <form className='w-100'>
+                <InputText
+                  name='email'
+                  type='text'
+                  label='Email'
+                  className='w-100'
+                  onInput={e => this.setField(e, 'email')}
+                />
+                <InputText
+                  name='password'
+                  type='password'
+                  label='Password'
+                  className='w-100'
+                  onInput={e => this.setField(e, 'password')}
+                />
+                <InputText
+                  name='password-confirm'
+                  type='password'
+                  label='Confirm Password'
+                  className='w-100'
+                  onInput={e => this.setField(e, 'passwordConfirm')}
+                />
+                <SignUpButton
+                  text='Sign Up'
+                  type='primary'
+                  className='w-100 sign-in'
+                  email={email}
+                  password={password}
+                  passwordConfirm={passwordConfirm}
+                />
+              </form>
 
               <Link to='/forgot-password' className='password-link'>
                 Forgot your password?

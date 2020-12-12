@@ -1,12 +1,10 @@
-const INITIAL_STATE = {};
+const INITIAL_STATE = null;
 
 const nextWorkoutReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case 'SET_NEXT_WORKOUT':
-      return {
-        ...state,
-        ...action.payload,
-      };
+    case 'GET_NEXT_WORKOUT':
+      return action.payload;
     default:
       return state;
   }

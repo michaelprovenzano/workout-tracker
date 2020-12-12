@@ -1,73 +1,87 @@
-import React from 'react';
-import api from '../../utils/apiCalls';
-
-// Redux Store
-import { connect } from 'react-redux';
-import { setActiveWorkoutLog } from '../../redux/activeWorkoutLog/activeWorkoutLog.actions';
-
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import './WorkoutSticky.styles.scss';
 
+// Redux
+import { connect } from 'react-redux';
+import {
+  skipWorkoutLog,
+  addWorkoutLog,
+  clearCurrentWorkoutLog,
+  clearActiveWorkoutLog,
+} from '../../redux/workoutLogs/workoutLogs.actions';
+import { getNextWorkout } from '../../redux/nextWorkout/nextWorkout.actions';
+import { clearCurrentExercises } from '../../redux/currentExercises/currentExercises.actions';
+import { clearCurrentWorkout } from '../../redux/currentWorkout/currentWorkout.actions';
+
+// Components
 import Button from '../Button/Button.component';
 
-class WorkoutSticky extends React.Component {
-  constructor(props) {
-    super();
-    this.props = props;
-    this.state = {
-      redirect: undefined,
-    };
-  }
+const WorkoutSticky = ({
+  activeProgramLog,
+  activeWorkoutLog,
+  nextWorkout,
+  getNextWorkout,
+  skipWorkoutLog,
+  addWorkoutLog,
+  clearCurrentWorkout,
+  clearCurrentWorkoutLog,
+  clearCurrentExercises,
+  clearActiveWorkoutLog,
+}) => {
+  const history = useHistory();
+  const [redirect, setRedirect] = useState(false);
 
-  getStats = async programLogId => {
-    let stats;
-    if (programLogId) stats = await api.get(`util/program-log-stats/${programLogId}`);
-    return stats.data;
-  };
+  useEffect(() => {
+    if (activeWorkoutLog && redirect) {
+      history.push(`/workout-logs/${activeWorkoutLog.workout_log_id}`);
+    }
+    // eslint-disable-next-line
+  }, [activeProgramLog, activeWorkoutLog, nextWorkout]);
 
-  onClick = async () => {
-    let { activeProgramLog, activeWorkoutLog, nextWorkout, history } = this.props;
-    let activeProgramLogId = activeProgramLog.program_log_id;
-    let workoutLog = activeWorkoutLog;
-    let workoutLogId;
-
-    // Check if next workout is there is an active workout log
-    if (!activeWorkoutLog && nextWorkout) {
-      // If there's no log, create a new workout log for the current program and make it the active workout log
-      workoutLog = await api.addOne('workout-logs', {
-        program_workout_id: nextWorkout.program_workout_id,
+  const skipWorkout = () => {
+    if (activeWorkoutLog) {
+      skipWorkoutLog(activeWorkoutLog.workout_log_id);
+      clearActiveWorkoutLog();
+    } else {
+      addWorkoutLog({
         program_log_id: activeProgramLog.program_log_id,
-        active: true,
+        program_workout_id: nextWorkout.program_workout_id,
+        date: new Date(Date.now()),
+        skipped: true,
+        active: false,
       });
     }
 
-    if (workoutLog) workoutLogId = workoutLog.workout_log_id;
-
-    // Get the stats to check workout progress
-    let stats = await this.getStats(activeProgramLogId);
-    if (stats.progress === 1)
-      await api.updateOne('program-logs', activeProgramLogId, { status: 'completed' });
-
-    // Redirect to the workout log page
-    if (workoutLogId) history.push(`/workout-logs/${workoutLogId}`);
+    getNextWorkout(activeProgramLog);
   };
 
-  render() {
-    let { nextWorkout, activeWorkoutLog, skip } = this.props;
-    let buttonText;
-    let workoutName = '',
-      workoutId;
+  const goToWorkoutLog = () => {
+    clearCurrentWorkoutLog();
+    clearCurrentExercises();
+    clearCurrentWorkout();
 
-    activeWorkoutLog ? (buttonText = 'Continue Workout') : (buttonText = 'Start Workout');
-    if (nextWorkout) {
-      workoutName = nextWorkout.name;
-      workoutId = nextWorkout.program_workout_id;
-    }
-    if (activeWorkoutLog) {
-      workoutName = activeWorkoutLog.name;
-      workoutId = activeWorkoutLog.program_workout_id;
+    if (!activeWorkoutLog) {
+      // If there's no log, create a new workout log for the current program and make it the active workout log
+      addWorkoutLog({
+        program_workout_id: nextWorkout.program_workout_id,
+        program_log_id: activeProgramLog.program_log_id,
+        date: new Date(Date.now()),
+        skipped: false,
+        active: true,
+      });
+      setRedirect(true);
+    } else {
+      history.push(`/workout-logs/${activeWorkoutLog.workout_log_id}`);
     }
 
-    return (
+    // Get the stats to check and update program progress
+    // if (stats.progress === 1)
+    //   await api.updateOne('program-logs', activeWorkoutLog, { status: 'completed' });
+  };
+
+  return (
+    (nextWorkout || activeWorkoutLog) && (
       <div className='workout-sticky row'>
         <div className='col-md-8 offset-md-2 col-sm-12 d-flex align-items-center flex-column'>
           <div className='d-flex w-100'>
@@ -76,26 +90,39 @@ class WorkoutSticky extends React.Component {
               text='Skip'
               position='left'
               type='secondary'
-              onClick={() => skip(workoutId)}
+              onClick={skipWorkout}
             />
           </div>
           {activeWorkoutLog ? <small>Today's Workout</small> : <small>Next Workout</small>}
-          <h2>{workoutName}</h2>
-          <Button text={buttonText} position='center' type='primary' onClick={this.onClick} />
+          <h2>{activeWorkoutLog ? activeWorkoutLog.name : nextWorkout.name}</h2>
+          <Button
+            text={activeWorkoutLog ? 'Continue Workout' : 'Start Workout'}
+            position='center'
+            type='primary'
+            onClick={goToWorkoutLog}
+          />
         </div>
       </div>
-    );
-  }
-}
+    )
+  );
+};
 
-// const mapDispatchToProps = dispatch => ({
-//   // setActiveWorkout: workout => dispatch(setActiveWorkout(workout)),
-//   // setActiveProgram: program => dispatch(setActiveProgram(program)),
-//   setActiveWorkoutLog: log => dispatch(setActiveWorkoutLog(log)),
-// });
+const mapStateToProps = state => ({
+  activeProgramLog: state.programLogs.activeProgramLog,
+  activeWorkoutLog: state.workoutLogs.activeWorkoutLog,
+  workoutLogs: state.workoutLogs.workoutLogs,
+  nextWorkout: state.nextWorkout,
+  stats: state.stats,
+});
 
-// const mapStateToProps = state => ({
-//   ...state,
-// });
+const mapDispatchToProps = {
+  skipWorkoutLog,
+  addWorkoutLog,
+  getNextWorkout,
+  clearActiveWorkoutLog,
+  clearCurrentWorkout,
+  clearCurrentWorkoutLog,
+  clearCurrentExercises,
+};
 
-export default WorkoutSticky;
+export default connect(mapStateToProps, mapDispatchToProps)(WorkoutSticky);

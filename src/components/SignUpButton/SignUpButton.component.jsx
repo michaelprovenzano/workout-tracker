@@ -13,7 +13,8 @@ class SignUpButton extends React.Component {
     this.state = {};
   }
 
-  signUp = (email, password, passwordConfirm) => {
+  signUp = (e, email, password, passwordConfirm) => {
+    e.preventDefault();
     if (password !== passwordConfirm) return;
 
     api
@@ -39,7 +40,7 @@ class SignUpButton extends React.Component {
       <button
         className={`btn btn-${type} btn-${position} ${className ? className : ''}`}
         onClick={e => {
-          this.signUp(email, password, passwordConfirm);
+          this.signUp(e, email, password, passwordConfirm);
         }}
       >
         {text}

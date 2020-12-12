@@ -4,7 +4,7 @@ import './ProgramsPage.styles.scss';
 import { connect } from 'react-redux';
 import api from '../../utils/apiCalls';
 
-import { setActiveExerciseLog } from '../../redux/activeExerciseLog/activeExerciseLog.actions';
+import { getActiveExerciseLog } from '../../redux/exerciseLogs/exerciseLogs.actions';
 
 // Components
 import Header from '../../components/Header/Header.component';
@@ -93,7 +93,7 @@ class ProgramsPage extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  setActiveExerciseLog: log => dispatch(setActiveExerciseLog(log)),
+  getActiveExerciseLog: log => dispatch(getActiveExerciseLog(log)),
 });
 
 const mapStateToProps = state => ({

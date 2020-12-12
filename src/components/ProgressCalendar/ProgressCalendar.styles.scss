@@ -10,7 +10,7 @@
 
   .calendar-day-container {
     width: 14%;
-    padding: 5px;
+    padding: 1.5%;
 
     &:nth-child(7n + 8) {
       .streak::before {

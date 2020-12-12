@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './MyProgramsPage.styles.scss';
 import moment from 'moment';
-import { connect } from 'react-redux';
 import api from '../../utils/apiCalls';
 
-import { setActiveExerciseLog } from '../../redux/activeExerciseLog/activeExerciseLog.actions';
+// Redux
+import { connect } from 'react-redux';
+import { setProgramLogs, getActiveProgramLog } from '../../redux/programLogs/programLogs.actions';
+import { setStats } from '../../redux/stats/stats.actions';
 
 // Components
 import Header from '../../components/Header/Header.component';
@@ -13,137 +15,114 @@ import Button from '../../components/Button/Button.component';
 import ProgressBar from '../../components/ProgressBar/ProgressBar.component';
 import Col from '../../components/Col/Col.component';
 
-class MyProgramsPage extends React.Component {
-  constructor(props) {
-    super();
+const MyProgramsPage = ({
+  activeProgramLog,
+  programLogs,
+  stats,
+  setProgramLogs,
+  getActiveProgramLog,
+  setStats,
+  history,
+}) => {
+  useEffect(() => {
+    if (!programLogs) setProgramLogs();
+    if (programLogs && !activeProgramLog) getActiveProgramLog();
+    if (stats && activeProgramLog) {
+      if (stats.program_log_id !== activeProgramLog.program_log_id)
+        setStats(activeProgramLog.program_log_id);
+    } else if (!stats && activeProgramLog) {
+      setStats(activeProgramLog.program_log_id);
+    }
+    // eslint-disable-next-line
+  }, [activeProgramLog, programLogs]);
 
-    this.props = props;
-    this.state = {
-      programLogs: undefined,
-      activeProgramLog: undefined,
-      stats: undefined,
-    };
-  }
-
-  abandonCurrentProgram = async () => {
-    let { activeProgramLog } = this.state;
-    let { history } = this.props;
-
+  const abandonCurrentProgram = async () => {
     await api.updateOne('program-logs', activeProgramLog.program_log_id, { status: 'abandoned' });
     history.push('/dashboard');
   };
 
-  componentDidMount = () => {
-    this.setData();
-  };
-
-  getStats = async programLogId => {
-    let stats;
-    if (programLogId) stats = await api.get(`util/program-log-stats/${programLogId}`);
-    return stats.data;
-  };
-
-  goToCurrentSchedule = () => {
-    let { activeProgramLog } = this.state;
-    let { history } = this.props;
+  const goToCurrentSchedule = () => {
     history.push(`/program-logs/${activeProgramLog.program_log_id}`);
   };
 
-  setData = async () => {
-    // Get all data for programs page
-    let programLogs = await api.get('program-logs', 'orderBy=[desc]start_date');
+  if (!programLogs) return <div>Loading...</div>;
 
-    // Get index of exercise log
-    let activeProgramLogIndex = programLogs.findIndex(log => log.status === 'active');
-    let activeProgramLog = programLogs[activeProgramLogIndex];
-
-    let stats;
-    if (activeProgramLog) await this.getStats(activeProgramLog.program_log_id);
-
-    this.setState({ programLogs, activeProgramLog, stats }, () => console.log(this.state));
-  };
-
-  render() {
-    let { activeProgramLog, programLogs, stats } = this.state;
-    let { history } = this.props;
-
-    return (
-      <div className='my-programs-page offset-header'>
-        <Header text='My Programs' history={history} />
-        <main className=''>
-          <div className='row'>
-            <Col number='1' bgLarge='true' className='workout-list'>
-              <div className='workout-program d-flex flex-column align-items-center w-100 mb-3'>
-                <div className='bold'>{activeProgramLog ? activeProgramLog.name : null}</div>
-                <small>Current Program</small>
+  return (
+    <div className='my-programs-page offset-header'>
+      <Header text='My Programs' history={history} />
+      <main className=''>
+        <div className='row'>
+          <Col number='1' bgLarge='true' className='workout-list'>
+            <div className='workout-program d-flex flex-column align-items-center w-100 mb-3'>
+              <div className='bold'>{activeProgramLog ? activeProgramLog.name : null}</div>
+              <small>Current Program</small>
+            </div>
+            <ProgressBar progress={stats ? stats.progress * 100 : 0} />
+            <div className='row w-100 btn-group'>
+              <div className='col-4 col-md-12'>
+                <Button
+                  text='Abandon'
+                  type='danger'
+                  position='center'
+                  className='w-100'
+                  onClick={abandonCurrentProgram}
+                />
               </div>
-              <ProgressBar progress={stats ? stats.progress * 100 : 0} />
-              <div className='row w-100 btn-group'>
-                <div className='col-4 col-md-12'>
-                  <Button
-                    text='Abandon'
-                    type='danger'
-                    position='center'
-                    className='w-100'
-                    onClick={this.abandonCurrentProgram}
-                  />
-                </div>
-                <div className='col-4 col-md-12'>
-                  <Button text='Stats' type='primary' position='center' className='w-100' />
-                </div>
-                <div className='col-4 col-md-12'>
-                  <Button
-                    text='Schedule'
-                    type='primary'
-                    position='center'
-                    className='w-100'
-                    onClick={this.goToCurrentSchedule}
-                  />
-                </div>
+              <div className='col-4 col-md-12'>
+                <Button text='Stats' type='primary' position='center' className='w-100' />
               </div>
-            </Col>
-            <Col number='2'>
-              <header className='header-secondary d-flex align-items-center text-primary w-100'>
-                Past Programs
-              </header>
-              {programLogs
-                ? programLogs.map((log, i) => {
-                    let startDate = moment(log.workout_schedule[0]).format('MM/DD/YYYY');
-                    let endDate = moment(
-                      log.workout_schedule[log.workout_schedule.length - 1]
-                    ).format('MM/DD/YYYY');
+              <div className='col-4 col-md-12'>
+                <Button
+                  text='Schedule'
+                  type='primary'
+                  position='center'
+                  className='w-100'
+                  onClick={goToCurrentSchedule}
+                />
+              </div>
+            </div>
+          </Col>
+          <Col number='2'>
+            <header className='header-secondary d-flex align-items-center text-primary w-100'>
+              Past Programs
+            </header>
+            {programLogs
+              ? programLogs.map((log, i) => {
+                  let startDate = moment(log.workout_schedule[0]).format('MM/DD/YYYY');
+                  let endDate = moment(
+                    log.workout_schedule[log.workout_schedule.length - 1]
+                  ).format('MM/DD/YYYY');
 
-                    let abandoned = log.status === 'abandoned';
-                    let completed = log.status === 'completed';
+                  let abandoned = log.status === 'abandoned';
+                  let completed = log.status === 'completed';
 
-                    return (
-                      <ProgramItem
-                        key={i}
-                        name={`${log.name}`}
-                        dateRange={`${startDate} - ${endDate}`}
-                        history={history}
-                        url={`/program-logs/${log.program_log_id}`}
-                        abandoned={abandoned}
-                        completed={completed}
-                        program
-                      />
-                    );
-                  })
-                : null}
-            </Col>
-          </div>
-        </main>
-      </div>
-    );
-  }
-}
-
-const mapDispatchToProps = dispatch => ({
-  setActiveExerciseLog: log => dispatch(setActiveExerciseLog(log)),
-});
+                  return (
+                    <ProgramItem
+                      key={i}
+                      name={`${log.name}`}
+                      dateRange={`${startDate} - ${endDate}`}
+                      history={history}
+                      url={`/program-logs/${log.program_log_id}`}
+                      abandoned={abandoned}
+                      completed={completed}
+                      program
+                    />
+                  );
+                })
+              : null}
+          </Col>
+        </div>
+      </main>
+    </div>
+  );
+};
 
 const mapStateToProps = state => ({
   ...state,
+  activeProgramLog: state.programLogs.activeProgramLog,
+  programLogs: state.programLogs.programLogs,
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(MyProgramsPage);
+export default connect(mapStateToProps, { setProgramLogs, getActiveProgramLog, setStats })(
+  MyProgramsPage
+);

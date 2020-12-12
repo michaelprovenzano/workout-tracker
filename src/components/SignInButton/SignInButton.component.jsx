@@ -13,7 +13,8 @@ class SignInButton extends React.Component {
     this.state = {};
   }
 
-  signIn = (email, password) => {
+  signIn = (e, email, password) => {
+    e.preventDefault();
     api
       .post('login', {
         email: email,
@@ -49,7 +50,7 @@ class SignInButton extends React.Component {
       <button
         className={`btn btn-${type} btn-${position} ${className ? className : ''}`}
         onClick={e => {
-          this.signIn(email, password);
+          this.signIn(e, email, password);
         }}
       >
         {text}

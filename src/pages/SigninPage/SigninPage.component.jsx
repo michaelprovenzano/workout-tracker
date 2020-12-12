@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import './SigninPage.styles.scss';
 
 import InputText from '../../components/InputText/InputText.component';
-import Button from '../../components/Button/Button.component';
 import SignInButton from '../../components/SignInButton/SignInButton.component';
 import logo from '../../images/logo-signin.svg';
 
@@ -30,27 +29,29 @@ class SigninPage extends React.Component {
               <div className='logo d-flex justify-content-center flex-column'>
                 <img src={logo} alt='logo' />
               </div>
-              <InputText
-                name='email'
-                type='text'
-                label='Email'
-                className='w-100'
-                onInput={e => this.setField(e, 'email')}
-              />
-              <InputText
-                name='password'
-                type='password'
-                label='Password'
-                className='w-100'
-                onInput={e => this.setField(e, 'password')}
-              />
-              <SignInButton
-                text='Sign In'
-                type='primary'
-                className='w-100 sign-in'
-                email={this.state.email}
-                password={this.state.password}
-              />
+              <form className='w-100'>
+                <InputText
+                  name='email'
+                  type='text'
+                  label='Email'
+                  className='w-100'
+                  onInput={e => this.setField(e, 'email')}
+                />
+                <InputText
+                  name='password'
+                  type='password'
+                  label='Password'
+                  className='w-100'
+                  onInput={e => this.setField(e, 'password')}
+                />
+                <SignInButton
+                  text='Sign In'
+                  type='primary'
+                  className='w-100 sign-in'
+                  email={this.state.email}
+                  password={this.state.password}
+                />
+              </form>
 
               <Link to='/forgot-password' className='password-link'>
                 Forgot your password?
