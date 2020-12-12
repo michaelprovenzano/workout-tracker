@@ -9,10 +9,12 @@ export const setNextWorkout = nextWorkout => dispatch =>
 export const getNextWorkout = programLog => async dispatch => {
   let nextWorkout;
 
+  // let workouts = await api.get('program-workouts', `program_id=1654`);
   let workouts = await api.get(
     'program-workouts',
     `program_id=${programLog.program_id}&orderBy=workout_order`
   );
+
   let workoutLogs = await api.get(
     'workout-logs',
     `program_log_id=${programLog.program_log_id}&orderBy=workout_order`
@@ -30,8 +32,6 @@ export const getNextWorkout = programLog => async dispatch => {
       }
     }
   }
-
-  if (Object.keys(nextWorkout).length === 0) return;
 
   dispatch({
     type: 'GET_NEXT_WORKOUT',
