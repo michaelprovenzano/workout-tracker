@@ -30,6 +30,9 @@ export const getNextWorkout = programLog => async dispatch => {
       }
     }
   }
+
+  if (Object.keys(nextWorkout).length === 0) return;
+
   dispatch({
     type: 'GET_NEXT_WORKOUT',
     payload: nextWorkout,
