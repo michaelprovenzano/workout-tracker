@@ -36,7 +36,7 @@ const Dashboard = ({
       let id = activeProgramLog.program_log_id;
       setWorkoutLogs(id);
       getActiveWorkoutLog(id);
-      if (!nextWorkout || !Object.keys(nextWorkout).length === 0) getNextWorkout(activeProgramLog);
+      if (!nextWorkout || Object.keys(nextWorkout).length === 0) getNextWorkout(activeProgramLog);
       setStats(id);
     }
     // eslint-disable-next-line
