@@ -6,7 +6,7 @@ const INITIAL_STATE = {
   workoutLogs: null,
 };
 
-const workoutLogs = (state = INITIAL_STATE, action) => {
+const workoutLogsReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case types.ADD_WORKOUT_LOG:
     case types.UPDATE_WORKOUT_LOG:
@@ -58,4 +58,4 @@ const workoutLogs = (state = INITIAL_STATE, action) => {
   }
 };
 
-export default workoutLogs;
+export default workoutLogsReducer;
