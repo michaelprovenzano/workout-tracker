@@ -86,7 +86,7 @@ const DateInput = ({ onInput, initialDate }) => {
     <div className='date-picker w-100'>
       <input
         type='text'
-        className='btn btn-secondary w-100 text-center mt-1'
+        className='date-picker-input btn w-100 text-center mt-1'
         value={date.format('MMMM M/D/YY')}
       />
       <div className={`popup-container w-100 ${!expanded ? 'hidden' : ''}`}>

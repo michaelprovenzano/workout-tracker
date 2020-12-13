@@ -1,6 +1,13 @@
 @import '../../styles/variables.scss';
 
 .date-picker {
+  &-input {
+    color: $primary;
+    background-color: transparent;
+    font-size: 1.6rem;
+    height: 40px;
+  }
+
   .popup-container {
     display: block;
     position: absolute;
