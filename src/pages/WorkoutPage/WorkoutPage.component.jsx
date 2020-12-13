@@ -15,6 +15,7 @@ import {
   setCurrentExerciseLog,
   clearCurrentExerciseLog,
 } from '../../redux/exerciseLogs/exerciseLogs.actions';
+import { getNextWorkout } from '../../redux/nextWorkout/nextWorkout.actions';
 
 import Header from '../../components/Header/Header.component';
 import Button from '../../components/Button/Button.component';
@@ -82,6 +83,7 @@ const WorkoutPage = ({
     // If workout has no exercises complete current workout
     if (currentExercises.length === 0) {
       updateWorkoutLog(currentWorkoutLog.workout_log_id, { active: false, progress: 1 });
+      getNextWorkout();
       history.push(`/dashboard`);
     } else if (currentExerciseLogs.length === 0) {
       // If workout has no exercise logs, create one and go to it
