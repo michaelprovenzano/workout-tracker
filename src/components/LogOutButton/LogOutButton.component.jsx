@@ -11,7 +11,6 @@ import { clearCurrentExercises } from '../../redux/currentExercises/currentExerc
 import { resetNextWorkout } from '../../redux/nextWorkout/nextWorkout.actions';
 import { clearStats } from '../../redux/stats/stats.actions';
 
-import { removeJwtCookie } from '../../utils/cookieController';
 import './LogOutButton.styles.scss';
 
 const LogOutButton = ({
@@ -31,9 +30,6 @@ const LogOutButton = ({
   clearStats,
 }) => {
   const logOut = () => {
-    // Remove the token from cookie
-    removeJwtCookie();
-
     // Reset all of the state
     removeCurrentUser();
     resetProgramLogs();

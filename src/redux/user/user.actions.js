@@ -1,4 +1,3 @@
-import { setJwtCookie } from '../../utils/cookieController';
 import api from '../../utils/apiCalls';
 
 export const setCurrentUser = (email, password) => async dispatch => {
@@ -10,9 +9,6 @@ export const setCurrentUser = (email, password) => async dispatch => {
 
     // Set the global user below
     if (data.status === 'success') {
-      // Put the token in a cookie
-      setJwtCookie(data.token);
-
       // Add the user to the state
       return dispatch({
         type: 'SET_CURRENT_USER',
@@ -33,9 +29,6 @@ export const registerUser = (email, password, passwordConfirm) => async dispatch
       password,
       passwordConfirm,
     });
-    console.log(data);
-    // Set the global user token below
-    setJwtCookie(data.token);
     return dispatch({
       type: 'REGISTER_USER',
       payload: data,
