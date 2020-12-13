@@ -70,3 +70,8 @@ export const skipWorkoutLog = workoutLogId => async dispatch => {
     payload: workoutLogId,
   });
 };
+
+export const resetWorkoutLogs = () => dispatch =>
+  dispatch({
+    type: types.RESET_WORKOUT_LOGS,
+  });

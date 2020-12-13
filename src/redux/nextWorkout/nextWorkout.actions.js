@@ -1,4 +1,5 @@
 import api from '../../utils/apiCalls';
+import types from './nextWorkout.types';
 
 export const setNextWorkout = nextWorkout => dispatch =>
   dispatch({
@@ -38,3 +39,8 @@ export const getNextWorkout = programLog => async dispatch => {
     payload: nextWorkout,
   });
 };
+
+export const resetNextWorkout = () => dispatch =>
+  dispatch({
+    type: types.RESET_NEXT_WORKOUT,
+  });

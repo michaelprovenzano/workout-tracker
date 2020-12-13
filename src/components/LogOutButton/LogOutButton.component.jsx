@@ -1,48 +1,81 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { removeCurrentUser } from '../../redux/user/user.actions';
+import { resetProgramLogs } from '../../redux/programLogs/programLogs.actions';
+import { resetWorkoutLogs } from '../../redux/workoutLogs/workoutLogs.actions';
+import { resetExerciseLogs } from '../../redux/exerciseLogs/exerciseLogs.actions';
+import { clearCurrentWorkout } from '../../redux/currentWorkout/currentWorkout.actions';
+import { clearCurrentWorkouts } from '../../redux/currentWorkouts/currentWorkouts.actions';
+import { clearCurrentExercises } from '../../redux/currentExercises/currentExercises.actions';
+import { resetNextWorkout } from '../../redux/nextWorkout/nextWorkout.actions';
+import { clearStats } from '../../redux/stats/stats.actions';
+
 import { removeJwtCookie } from '../../utils/cookieController';
 import './LogOutButton.styles.scss';
 
-class LogOutButton extends React.Component {
-  constructor(props) {
-    super();
-  }
-
-  logOut = () => {
+const LogOutButton = ({
+  position,
+  type,
+  className,
+  collapseMenu,
+  user,
+  removeCurrentUser,
+  resetProgramLogs,
+  resetWorkoutLogs,
+  resetExerciseLogs,
+  clearCurrentWorkout,
+  clearCurrentWorkouts,
+  clearCurrentExercises,
+  resetNextWorkout,
+  clearStats,
+}) => {
+  const logOut = () => {
     // Remove the token from cookie
     removeJwtCookie();
 
-    // Add the user to the state
-    this.props.removeCurrentUser();
+    // Reset all of the state
+    removeCurrentUser();
+    resetProgramLogs();
+    resetWorkoutLogs();
+    resetExerciseLogs();
+    clearCurrentWorkout();
+    clearCurrentWorkouts();
+    clearCurrentExercises();
+    resetNextWorkout();
+    clearStats();
 
     // Redirect
-    this.props.history.push('/sign-in');
-
-    // Change button text
-    this.setState({ text: 'Sign In' });
+    return <Redirect to='/sign-in' />;
   };
 
-  render() {
-    let { position, type, className, text, collapseMenu } = this.props;
+  return (
+    <button
+      className={`btn btn-${type} btn-${position} ${className ? className : ''}`}
+      onClick={() => {
+        logOut();
+        collapseMenu();
+      }}
+    >
+      {user.token ? 'Log Out' : 'Sign In'}
+    </button>
+  );
+};
 
-    return (
-      <button
-        className={`btn btn-${type} btn-${position} ${className ? className : ''}`}
-        onClick={() => {
-          this.logOut();
-          collapseMenu();
-        }}
-      >
-        {text}
-      </button>
-    );
-  }
-}
-
-const mapDispatchToProps = dispatch => ({
-  removeCurrentUser: user => dispatch(removeCurrentUser(user)),
+const mapStateToProps = state => ({
+  ...state,
 });
 
-export default connect(null, mapDispatchToProps)(withRouter(LogOutButton));
+const mapDispatchToProps = {
+  removeCurrentUser,
+  resetProgramLogs,
+  resetWorkoutLogs,
+  resetExerciseLogs,
+  clearCurrentWorkout,
+  clearCurrentWorkouts,
+  clearCurrentExercises,
+  resetNextWorkout,
+  clearStats,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(LogOutButton);

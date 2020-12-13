@@ -33,3 +33,8 @@ export const setProgramLogs = () => async dispatch => {
     payload: logs,
   });
 };
+
+export const resetProgramLogs = () => dispatch =>
+  dispatch({
+    type: types.RESET_PROGRAM_LOGS,
+  });

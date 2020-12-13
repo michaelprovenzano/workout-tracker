@@ -1,5 +1,6 @@
-import React from 'react';
-import { Route } from 'react-router-dom';
+import React, { Fragment } from 'react';
+import { connect } from 'react-redux';
+import { Route, Redirect } from 'react-router-dom';
 import './styles/bootstrap/bootstrap-grid.css';
 import './App.scss';
 
@@ -17,21 +18,31 @@ import MySchedulePage from './pages/MySchedulePage/MySchedulePage.component';
 
 import TestPage from './pages/_TestPage/TestPage.component';
 
-function App() {
+function App({ user }) {
   return (
     <div className='App'>
       <Navigation />
       <Route exact path='/test' component={TestPage} />
-      <Route exact path='/my-programs' component={MyProgramsPage} />
       <Route exact path='/sign-up' component={SignupPage} />
       <Route exact path='/sign-in' component={SigninPage} />
-      <Route exact path='/dashboard' component={Dashboard} />
-      <Route exact path='/programs' component={ProgramsPage} />
-      <Route exact path='/program-logs/:programLogId' component={MySchedulePage} />
-      <Route exact path='/workout-logs/:workoutLogId' component={WorkoutPage} />
-      <Route exact path='/workout-logs/:workoutLogId/:exerciseLogId' component={ExercisePage} />
+      {!user.token ? (
+        <Redirect to='/sign-in' />
+      ) : (
+        <Fragment>
+          <Route exact path='/my-programs' component={MyProgramsPage} />
+          <Route exact path='/dashboard' component={Dashboard} />
+          <Route exact path='/programs' component={ProgramsPage} />
+          <Route exact path='/program-logs/:programLogId' component={MySchedulePage} />
+          <Route exact path='/workout-logs/:workoutLogId' component={WorkoutPage} />
+          <Route exact path='/workout-logs/:workoutLogId/:exerciseLogId' component={ExercisePage} />
+        </Fragment>
+      )}
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = state => ({
+  ...state,
+});
+
+export default connect(mapStateToProps, null)(App);

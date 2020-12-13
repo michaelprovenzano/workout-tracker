@@ -1,4 +1,5 @@
 import api from '../../utils/apiCalls';
+import types from './stats.types';
 
 export const setStats = programLogId => async dispatch => {
   const stats = await api.get(`util/program-log-stats/${programLogId}`);
@@ -9,3 +10,8 @@ export const setStats = programLogId => async dispatch => {
     payload: stats.data,
   });
 };
+
+export const clearStats = () => dispatch =>
+  dispatch({
+    type: types.CLEAR_STATS,
+  });

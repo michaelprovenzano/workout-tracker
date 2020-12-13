@@ -53,6 +53,8 @@ const exerciseLogsReducer = (state = INITIAL_STATE, action) => {
         ...state,
         currentExerciseLogs: null,
       };
+    case types.RESET_EXERCISE_LOGS:
+      return INITIAL_STATE;
     default:
       return state;
   }

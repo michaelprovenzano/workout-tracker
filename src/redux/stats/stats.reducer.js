@@ -1,3 +1,5 @@
+import types from './stats.types';
+
 const INITIAL_STATE = {};
 
 const statsReducer = (state = INITIAL_STATE, action) => {
@@ -7,6 +9,8 @@ const statsReducer = (state = INITIAL_STATE, action) => {
         ...state,
         ...action.payload,
       };
+    case types.CLEAR_STATS:
+      return INITIAL_STATE;
     default:
       return state;
   }

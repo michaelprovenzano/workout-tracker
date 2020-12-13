@@ -22,6 +22,8 @@ const activeProgramLogReducer = (state = INITIAL_STATE, action) => {
       };
     case types.SET_PROGRAM_LOGS:
       return { ...state, programLogs: action.payload };
+    case types.RESET_PROGRAM_LOGS:
+      return INITIAL_STATE;
     default:
       return state;
   }

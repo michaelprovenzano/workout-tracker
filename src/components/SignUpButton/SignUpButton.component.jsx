@@ -1,56 +1,42 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
-import { setCurrentUser } from '../../redux/user/user.actions';
-import { setJwtCookie } from '../../utils/cookieController';
-import api from '../../utils/apiCalls';
+import { Redirect } from 'react-router-dom';
+import { registerUser } from '../../redux/user/user.actions';
 import './SignUpButton.styles.scss';
 
-class SignUpButton extends React.Component {
-  constructor(props) {
-    super();
-
-    this.state = {};
-  }
-
-  signUp = (e, email, password, passwordConfirm) => {
+const SignUpButton = ({
+  text,
+  position,
+  type,
+  email,
+  password,
+  passwordConfirm,
+  className,
+  user,
+  registerUser,
+}) => {
+  const signUp = (e, email, password, passwordConfirm) => {
     e.preventDefault();
     if (password !== passwordConfirm) return;
-
-    api
-      .post('register', {
-        email: email,
-        password: password,
-      })
-      // Set the global user token below
-      .then(data => {
-        setJwtCookie(data.token);
-        data.token = null;
-        this.props.setCurrentUser(data);
-      })
-      .then(() => {
-        this.props.history.push('/dashboard');
-      })
-      .catch(err => console.log(err));
+    registerUser(email, password, passwordConfirm);
   };
 
-  render() {
-    let { text, position, type, email, password, passwordConfirm, className } = this.props;
-    return (
-      <button
-        className={`btn btn-${type} btn-${position} ${className ? className : ''}`}
-        onClick={e => {
-          this.signUp(e, email, password, passwordConfirm);
-        }}
-      >
-        {text}
-      </button>
-    );
-  }
-}
+  if (user.token) return <Redirect to='/dashboard' />;
 
-const mapDispatchToProps = dispatch => ({
-  setCurrentUser: user => dispatch(setCurrentUser(user)),
+  return (
+    <button
+      className={`btn btn-${type} btn-${position} ${className ? className : ''}`}
+      onClick={e => {
+        signUp(e, email, password, passwordConfirm);
+      }}
+    >
+      {text}
+    </button>
+  );
+};
+
+const mapStateToProps = state => ({
+  ...state,
 });
 
-export default connect(null, mapDispatchToProps)(withRouter(SignUpButton));
+export default connect(mapStateToProps, { registerUser })(SignUpButton);

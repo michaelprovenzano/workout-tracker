@@ -88,3 +88,8 @@ export const clearCurrentExerciseLog = () => async dispatch => {
     type: types.CLEAR_CURRENT_EXERCISE_LOG,
   });
 };
+
+export const resetExerciseLogs = () => dispatch =>
+  dispatch({
+    type: types.RESET_EXERCISE_LOGS,
+  });
